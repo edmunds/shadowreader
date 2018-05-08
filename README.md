@@ -1,5 +1,7 @@
 # Shadowreader
 
+![Shadowreader](imgs/shadowreader.png)
+
 > Serverless load testing system for replaying production traffic into testing environments.
 
 Shadowreader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from ELB logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
