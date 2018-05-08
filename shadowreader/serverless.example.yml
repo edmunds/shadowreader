@@ -1,0 +1,223 @@
+# Copyright 2018 Edmunds.com, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+
+service: sr
+
+plugins:
+  - serverless-python-requirements
+custom:
+  # This is your project name. It is to ensure that the S3 bucket used by Shadowreader has unique naming
+  my_project_name: my-unique-project-name
+
+  app_acronym: sr
+  default_stage: dev
+  stage: ${opt:stage, self:custom.default_stage}
+
+  stack_name: ${self:custom.app_acronym}-${self:custom.stage}
+
+  default_region: us-east-1
+  region: ${opt:region, self:custom.default_region}
+
+  resource_name: sr-${self:custom.stage}
+
+  parsed_data_bucket: ${self:custom.stack_name}-${self:custom.my_project_name}-parsed-data
+
+  consumer_master_past_name: ${self:custom.stack_name}-consumer-master-past
+  consumer_slave_name: ${self:custom.stack_name}-consumer-slave
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: ${self:custom.stage} # Set the default stage used. Default is dev
+  region: ${self:custom.region} # Overwrite the default region used. Default is us-east-1
+  memorySize: 256 # Increase the default memory size if you're running into performance problems
+  timeout: 200
+  role: ShadowreaderRole
+  versionFunctions: false # Optional function versioning
+# Optional. If you are testing inside a VPC, these must be set to give Shadowreader VPC access.
+#  vpc:
+#    securityGroupIds:
+#      - sg-your-security-group-id
+#    subnetIds:
+#      - subnet-id-1
+#      - subnet-id-2
+  stackTags:
+      Name: shadowreader
+
+# you can define service wide environment variables here
+  environment:
+    stage: ${self:custom.stage}
+    region: ${self:custom.region}
+
+    parsed_data_bucket: ${self:custom.parsed_data_bucket}
+
+    consumer_master_past_name: ${self:custom.consumer_master_past_name}
+    consumer_slave_name: ${self:custom.consumer_slave_name}
+
+# you can add packaging information here
+package:
+  exclude:
+   - .idea/**
+   - .cache/**
+   - .vscode/**
+   - .git/**
+   - node_modules/**
+   - tests/**
+
+functions:
+  orchestrator-past:
+    handler: functions/orchestrator_past.lambda_handler
+    events:
+      - schedule: rate(1 minute)
+    environment:
+      test_params: '{
+                      "base_url": "http://your_base_url.com",
+                      "rate": 0,
+                      "replay_start_time": "2018-5-7-17-30",
+                      "loop_duration": 1,
+                      "identifier": "oss"
+                    }'
+      timezone: US/Pacific
+      # Required.
+      # "test_params" variable is a JSON that specifies the parameters for the load test.
+      #  All values except "identifier" must be properly configured.
+
+      # "base_url" - Here, you can specify the base URL which will prefix the URIs collected from ELB logs.
+      #              It will be prefixed with "http://" if "http://" or "https://" is not specified.
+      # "rate" - A percentage value at which Shadowreader will perform the load test.
+      #          It accepts a float value larger than 0
+      # "replay_start_time" - Shadowreader replays traffic from certain time periods for its load tests.
+      #                       This is the starting time for the replay period.
+      #                       If Shadowreader has not collected data for this time period,
+      #                       it will not run.
+      # "loop_duration" - This is an integer value, denominated in minutes.
+      #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
+      #                   For example, if "replay_start_time" = "2018-1-1-10-0" and "loop_duration" = 60,
+      #                   then it will replay traffic from 2018-1-1-10-0 to 2018-1-1-11-0
+      # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
+      # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
+
+      apps_to_test: '["myELB"]' # Don't edit this value
+
+  producer:
+    handler: functions/producer.lambda_handler
+    timeout: 300
+    memorySize: 256
+    events:
+       - schedule: rate(1 minute)
+    environment:
+      apps_to_parse: '["myELB"]' # Don't edit this value
+
+  consumer-slave:
+    handler: functions/consumer_slave.lambda_handler
+
+  consumer-master-past:
+    handler: functions/consumer_master_past.lambda_handler
+
+resources:
+ Resources:
+  SrDataBucketS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.parsed_data_bucket}
+      Tags:
+        -
+          Key: "Name"
+          Value: "shadowreader"
+
+      LifecycleConfiguration:
+        Rules:
+        - Id: ExpireDatain30Days
+          Prefix: ''
+          Status: Enabled
+          ExpirationInDays: '30'
+
+  ShadowreaderRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+        -
+          PolicyName: "CW-logs-push"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+        -
+          PolicyName: "vpc-ec2-network-interface"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DetachNetworkInterface
+                  - ec2:DeleteNetworkInterface
+                Resource: "*"
+        -
+          PolicyName: "sns-push"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:CreateTopic
+                  - sns:Get*
+                  - sns:List*
+                  - sns:Publish
+                Resource: "*"
+        -
+          PolicyName: "lambda-invoke"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: "*"
+        -
+          PolicyName: "s3-get-put"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:List*
+                  - s3:Read*
+                  - s3:Put*
+                  - s3:Get*
+                Resource: "*"
+        -
+          PolicyName: "cw-get-put"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:*
+                Resource: "*"
