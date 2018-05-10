@@ -198,8 +198,8 @@ class MyTime():
         return s
 
     def __str__(self):
-        s = self.dt.strftime('%Y-%m-%d_%H:%M:%S')
-        return f'{s}_{self.tzinfo}'
+        s = self.dt.strftime('%Y-%m-%d %H:%M:%S')
+        return f'{s} {self.tzinfo}'
 
     def __eq__(self, other):
         if not self._is_valid_operand(other):
