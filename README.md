@@ -87,7 +87,7 @@ environment:
 
 ![](imgs/ELB-logs-how-to.png)
 
-### Finding your access logs path
+### Finding your access_logs_bucket and path
 
 ![](imgs/elb-logs-2.png)
 
