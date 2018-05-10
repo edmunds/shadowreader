@@ -36,8 +36,8 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
     try:
         # If apply_filter key exists, set to True and there is a filter plugin
         if ('apply_filter' in filters and filters['apply_filter']
-                and sr_plugins.exists('filter')):
-            filter_plugin = sr_plugins.load('filter')
+                and sr_plugins.exists('load_filter')):
+            filter_plugin = sr_plugins.load('load_filter')
             load = filter_plugin.main(load=load, filters=filters)
 
     except Exception as e:
