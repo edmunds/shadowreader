@@ -28,7 +28,7 @@ def test_alb_producer():
         month=5,
         day=6,
         hour=14,
-        minute=29,
+        minute=30,
         second=0,
         microsecond=0,
         tzinfo='US/Pacific')

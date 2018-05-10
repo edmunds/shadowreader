@@ -55,5 +55,5 @@ def test_app_str():
         rate=100,
         identifier='qa-21')
     s = 'App(name="test", ' \
-        'replay_start_time=2018-03-26_19:07:39_UTC, loop_duration=60, base_url="http://qa-21-www.pytest.com", identifier="qa-21", rate=100, cur_timestamp=1522091259)'
+        'replay_start_time=2018-03-26 19:07:39 UTC, loop_duration=60, base_url="http://qa-21-www.pytest.com", identifier="qa-21", rate=100, cur_timestamp=1522091259)'
     assert str(app) == s
