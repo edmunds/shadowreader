@@ -12,9 +12,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 """
-from os import getenv
-from os import path
-
+from os import path, getenv
 import yaml
 from collections import defaultdict
 import importlib
@@ -29,6 +27,13 @@ def load_yml_config(*, file: str, key: str) -> dict:
         f'{file}',
         f'../{file}',
     ]
+
+    # Look for extra paths the yml files could be in
+    extra_sr_conf_paths = getenv('sr_conf_path', '')
+    if extra_sr_conf_paths:
+        extra_sr_conf_paths = extra_sr_conf_paths.format(file)
+        files_to_try.append(extra_sr_conf_paths)
+
     for f in files_to_try:
         if path.isfile(f):
             file = open(f'{f}')
