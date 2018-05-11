@@ -30,11 +30,11 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
         num_original_reqs, rate=rate, min_load=min_load)
 
     print(f'rate: {num_targeted_reqs} / {num_original_reqs} = {rate}%')
-
     load = _loader(load, num_targeted_reqs, num_original_reqs)
 
     try:
         # If apply_filter key exists, set to True and there is a filter plugin
+        # Filter out certain URLs according to the test params
         if ('apply_filter' in filters and filters['apply_filter']
                 and sr_plugins.exists('load_filter')):
             filter_plugin = sr_plugins.load('load_filter')
@@ -61,6 +61,7 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
 
 
 def _loader(uris_data, target, original):
+    """ Given a target load size, sample from the URIs data set to generate the load required"""
     if target > original:
         load = _loader(uris_data, target - original, original)
         target = original
