@@ -24,10 +24,9 @@ Functions for generating and transforming load test data to load to be used for 
 
 def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
                 filters: dict) -> list:
-    """
-    Given a target rate (an integer percentage value) and a list of URIs (load)
-    Transform them to a list of URLs
-    Optional filters can filter out certain requests based on its attributes
+    """ Given a target rate (an integer percentage value) and a list of URIs (load)
+        Transform them to a list of URLs
+        Optional filters can filter out certain requests based on its attributes
     """
     num_original_reqs = len(load)
 
