@@ -23,12 +23,19 @@ Functions for generating and transforming load test data to load to be used for 
 
 
 def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
-                filters: dict):
+                filters: dict) -> list:
+    """
+    Given a target rate (an integer percentage value) and a list of URIs (load)
+    Transform them to a list of URLs
+    Optional filters can filter out certain requests based on its attributes
+    """
     num_original_reqs = len(load)
 
+    # Given a rate and original load size, calculate the target load size
     num_targeted_reqs = _calculate_target_load(
         num_original_reqs, rate=rate, min_load=min_load)
 
+    # Increase of decrease the load by the calculated target load size
     print(f'rate: {num_targeted_reqs} / {num_original_reqs} = {rate}%')
     load = _loader(load, num_targeted_reqs, num_original_reqs)
 
@@ -47,6 +54,7 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
         raise Exception(
             f'Error applying filters in filter_load(): {type(e)}, {e}')
 
+    # Pass in URIs to plugin to transform into URLs
     if sr_plugins.exists('loader_middleware'):
         midware = sr_plugins.load('loader_middleware')
         midware_input = {
@@ -60,22 +68,19 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
     return load
 
 
-def _loader(uris_data, target, original):
-    """ Given a target load size, sample from the URIs data set to generate the load required"""
+def _loader(uris_data: list, target: int, original: int) -> list:
+    """ Given a target load size, sample from the URIs list to generate the load required"""
     if target > original:
         load = _loader(uris_data, target - original, original)
         target = original
     else:
         load = []
-    if not isinstance(uris_data, list):
-        print('loader data:', type(uris_data))
-        print('loader keys:', uris_data.keys())
     load += random.sample(uris_data, target)
     return load
 
 
 def _calculate_target_load(num_reqs: int, rate: float = 100,
-                           min_load: int = 0):
+                           min_load: int = 0) -> int:
     """ Given the rate and number of URLs in data set, calculate how many URLs to send in this load"""
     try:
         target_num_reqs = num_reqs * (rate / 100)
