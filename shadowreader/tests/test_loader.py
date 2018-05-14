@@ -27,17 +27,16 @@ def test_loader():
 
 def test_calculate_target_load():
     target_num_reqs = loader._calculate_target_load(
-        num_reqs=1234, rate=52.5, min_load=0)
+        num_reqs=1234, rate=52.5, baseline=0)
 
     assert target_num_reqs == 648
 
 
-def test_calculate_target_load_w_min_load():
+def test_calculate_target_load_w_baseline():
     min_load = 2000
     target_num_reqs = loader._calculate_target_load(
-        num_reqs=1234, rate=52.5, min_load=min_load)
+        num_reqs=1234, rate=52.5, baseline=min_load)
 
-    maximum = min_load + (0.5 - 0) * 50
-    minimum = min_load + (0.5 - 1) * 50
+    assert target_num_reqs == 1050
 
-    assert minimum <= target_num_reqs <= maximum
+

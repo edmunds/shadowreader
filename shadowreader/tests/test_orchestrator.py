@@ -41,7 +41,9 @@ def test_init_apps_from_test_params():
         rate=100,
         base_url='http://qa-www.pytest.com',
         identifier='qa',
-        loop_duration=60)
+        loop_duration=60,
+        baseline=0
+    )
 
     assert app1 == app2 and len(apps) == 3
 
@@ -83,6 +85,8 @@ def test_init_apps_from_test_params_w_override():
         rate=50,
         base_url='http://qa-11-www.pytest.com',
         identifier='qa-11',
-        loop_duration=30)
+        loop_duration=30,
+        baseline=0
+    )
 
     assert app1 == app1_copy and len(apps) == 1

@@ -50,7 +50,7 @@ def test_consumer_slave_lambda_handler():
     load = loader_main(
         load=myload,
         rate=1,
-        min_load=0,
+        baseline=0,
         base_url='https://postman-echo.com',
         filters={})
 
