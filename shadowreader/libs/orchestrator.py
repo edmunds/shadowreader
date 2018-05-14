@@ -104,6 +104,11 @@ def _init_app_obj_from_params(app_name: str, params: dict,
     "env_to_test": "qa"
     """
     rate = params['rate']
+    if 'baseline'in params:
+        baseline = params['baseline']
+    else:
+        baseline = 0
+
     loop_duration = params['loop_duration']
 
     replay_start_time = params['replay_start_time']
@@ -120,6 +125,7 @@ def _init_app_obj_from_params(app_name: str, params: dict,
         loop_duration=loop_duration,
         base_url=base_url,
         rate=rate,
+        baseline=baseline,
         identifier=identifier)
 
 

@@ -59,6 +59,7 @@ def lambda_handler(event, context):
                 'base_url': app.base_url,
                 'cur_timestamp': app.cur_timestamp,
                 'rate': app.rate,
+                'baseline': app.baseline,
                 'parent_lambda': lambda_name,
                 'child_lambda': consumer_master_past_lambda,
                 'headers': headers,

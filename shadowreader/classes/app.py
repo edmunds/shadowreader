@@ -24,6 +24,7 @@ class App:
                  replay_start_time: MyTime,
                  loop_duration: int,
                  rate: int,
+                 baseline: int,
                  base_url: str,
                  identifier: str='',
                  ):
@@ -49,6 +50,7 @@ class App:
             self.identifier = base_url
 
         self.rate = rate
+        self.baseline = baseline
 
         self.cur_timestamp = replay_start_time.epoch
         self.cur_timestamp_pst = str(
@@ -58,6 +60,7 @@ class App:
         L = [
             f'name="{self.name}"', f'replay_start_time={self.replay_start_time}', f'loop_duration={self.loop_duration}',
             f'base_url="{self.base_url}"', f'identifier="{self.identifier}"', f'rate={self.rate}', f'cur_timestamp={self.cur_timestamp}',
+            f'baseline={self.baseline}',
             ]
         s = f'{self.__class__.__qualname__}({", ".join(map(str, L))})'
         return s
