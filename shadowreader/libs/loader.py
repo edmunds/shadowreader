@@ -40,8 +40,6 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
     else:
         print(f'rate: {num_targeted_reqs} / {num_original_reqs} = {rate}%')
 
-    load = _loader(load, num_targeted_reqs, num_original_reqs)
-
     try:
         # If apply_filter key exists, set to True and there is a filter plugin
         # Filter out certain URLs according to the test params
@@ -56,6 +54,8 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
         print('filters:', filters)
         raise Exception(
             f'Error applying filters in filter_load(): {type(e)}, {e}')
+
+    load = _loader(load, num_targeted_reqs, num_original_reqs)
 
     # Pass in URIs to plugin to transform into URLs
     if sr_plugins.exists('loader_middleware'):
