@@ -31,7 +31,7 @@ def put_lambda_metric_w_app_and_env_to_test(metric_name: str,
                                             identifier: str,
                                             mytime: MyTime,
                                             storage_resolution: int = 60,
-                                            val: int = 0) -> dict:
+                                            val: float = 0) -> dict:
     """ Put a custom CloudWatch metric in the "sr" namespace """
     dimensions = [{
         'Name': 'sr_stage',

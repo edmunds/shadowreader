@@ -29,7 +29,9 @@ def test_user_agent_generation_for_past_w_identifier():
             loop_duration=60,
             base_url=base_url,
             identifier='qa-21',
-            rate=100)
+            rate=100,
+            baseline=0
+    )
     headers = Headers(
             shadowreader_type='past', stage=stage, app=app, step=step).headers
     user_agent = headers['x-request-id']
@@ -47,7 +49,9 @@ def test_user_agent_generation_for_past():
             replay_start_time=mytime,
             loop_duration=60,
             base_url=base_url,
-            rate=100)
+            rate=100,
+            baseline=0
+    )
     headers = Headers(
             shadowreader_type='past', stage=stage, app=app, step=step).headers
     user_agent = headers['x-request-id']

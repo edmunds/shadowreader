@@ -83,12 +83,13 @@ def init_consumer_master(event: dict):
         rate = float(event['rate'])
         headers = event['headers']
         filters = event['filters']
+        baseline = event['baseline']
     except Exception as e:
         raise ValueError(
             f'{type(e)}, {e}, error getting orchestration data from Lambda event json'
         )
 
-    return app, identifier, cur_timestamp, rate, headers, filters, base_url
+    return app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline
 
 
 def init_consumer_slave(event: dict):

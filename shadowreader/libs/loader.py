@@ -22,7 +22,7 @@ Functions for generating and transforming load test data to load to be used for 
 """
 
 
-def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
+def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
                 filters: dict) -> list:
     """ Given a target rate (an integer percentage value) and a list of URIs (load)
         Transform them to a list of URLs
@@ -32,11 +32,13 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
 
     # Given a rate and original load size, calculate the target load size
     num_targeted_reqs = _calculate_target_load(
-        num_original_reqs, rate=rate, min_load=min_load)
+        num_original_reqs, rate=rate, baseline=baseline)
 
     # Increase of decrease the load by the calculated target load size
-    print(f'rate: {num_targeted_reqs} / {num_original_reqs} = {rate}%')
-    load = _loader(load, num_targeted_reqs, num_original_reqs)
+    if baseline:
+        print(f'rate: {num_targeted_reqs} / {baseline} = {rate}%')
+    else:
+        print(f'rate: {num_targeted_reqs} / {num_original_reqs} = {rate}%')
 
     try:
         # If apply_filter key exists, set to True and there is a filter plugin
@@ -52,6 +54,8 @@ def loader_main(*, load: list, rate: float, min_load: int, base_url: str,
         print('filters:', filters)
         raise Exception(
             f'Error applying filters in filter_load(): {type(e)}, {e}')
+
+    load = _loader(load, num_targeted_reqs, num_original_reqs)
 
     # Pass in URIs to plugin to transform into URLs
     if sr_plugins.exists('loader_middleware'):
@@ -79,17 +83,10 @@ def _loader(uris_data: list, target: int, original: int) -> list:
 
 
 def _calculate_target_load(num_reqs: int, rate: float = 100,
-                           min_load: int = 0) -> int:
+                           baseline: int = 0) -> int:
     """ Given the rate and number of URLs in data set, calculate how many URLs to send in this load"""
-    try:
+    if baseline:
+        target_num_reqs = baseline * (rate / 100)
+    else:
         target_num_reqs = num_reqs * (rate / 100)
-        if target_num_reqs < min_load:
-            target_num_reqs = min_load + (0.5 - random.random()) * 50
-        return math.ceil(target_num_reqs)
-    except ArithmeticError as e:
-        print(
-            f'{type(e)}, {e}: int({num_reqs} * ({rate}/100)), {min_load}+(0.5 - random.random())*50'
-        )
-        raise ArithmeticError(
-            f'{type(e)}, {e}: int({num_reqs} * ({rate}/100)), {min_load}+(0.5 - random.random())*50'
-        )
+    return math.ceil(target_num_reqs)

@@ -76,7 +76,7 @@ def lambda_handler(event, context):
         mytime, lambda_name, env_vars = init_lambda(context)
         stage = env_vars['stage']
 
-        app, identifier, cur_timestamp, rate, headers, filters, base_url = init_consumer_master(
+        app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline = init_consumer_master(
             event)
 
         parsed_data_bucket = env_vars['parsed_data_bucket']
@@ -101,7 +101,7 @@ def lambda_handler(event, context):
         load = loader_main(
             load=load,
             rate=rate,
-            min_load=0,
+            baseline=baseline,
             base_url=base_url,
             filters=filters)
 

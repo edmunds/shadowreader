@@ -40,6 +40,7 @@ def test_consumer_master_past_lambda_handler():
         },
         'parent_lambda': 'sr-local-pytest',
         'rate': 1,
+        'baseline': 0,
     }
     res = consumer_master_past.lambda_handler(event, {})
     assert res == test_app

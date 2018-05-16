@@ -46,20 +46,22 @@ orchestrator-past:
                     "loop_duration": 60,
                     "identifier": "oss"
                 }'
+    timezone: US/Pacific
 
-# "base_url" - Here, you can specify the base URL that will be load tested.
-# "rate" - A percentage value at which Shadowreader will perform the load test.
-#          It accepts a float value larger than 0
-# "replay_start_time" - Shadowreader replays traffic from certain time periods for its load tests.
-#                       This is the starting time for the replay period.
-#                       If Shadowreader has not collected data for this time period,
-#                       it will not run.
-# "loop_duration" - This is an integer value, denominated in minutes.
-#                   It is how long the replay period will be,
-#                   starting from the time specified in "replay_start_time"
-#                   For example, if "replay_start_time" = "2018-1-1-10-0" and "loop_duration" = 60,
-#                   then it will replay traffic from 2018/1/1 10AM to 2018/1/1 11AM
-# "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
+  # "base_url" - Here, you can specify the base URL which will prefix the URIs collected from ELB logs.
+  #              It should not end with a "/"
+  # "rate" - A percentage value at which Shadowreader will perform the load test.
+  #          It accepts a float value larger than 0
+  # "replay_start_time" - Shadowreader replays traffic from certain time periods for its load tests.
+  #                       This is the starting time for the replay period.
+  #                       If Shadowreader has not collected data for this time period,
+  #                       it will not run.
+  # "loop_duration" - This is an integer value, denominated in minutes.
+  #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
+  #                   For example, if "replay_start_time" = "2018-1-1-10-0" and "loop_duration" = 60,
+  #                   then it will replay traffic from 2018-1-1-10-0 to 2018-1-1-11-0
+  # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
+  # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
 ```
 
 ```

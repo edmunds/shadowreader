@@ -106,6 +106,9 @@ functions:
       #                   then it will replay traffic from 2018-1-1-10-0 to 2018-1-1-11-0
       # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
       # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
+      # >>> import pytz
+      # >>> pytz.all_timezones
+      # Will list all timezones supported
 
       apps_to_test: '["myELB"]' # Don't edit this value
 
