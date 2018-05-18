@@ -18,7 +18,7 @@ from functions import consumer_master_past
 
 def test_consumer_master_past_lambda_handler():
     test_app = 'test-app1'
-    identifier = 'qa-21'
+    identifier = 'qa'
 
     event = {
         'app': test_app,

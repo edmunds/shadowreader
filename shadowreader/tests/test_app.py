@@ -41,10 +41,10 @@ def test_app_init_w_identifier():
         loop_duration=60,
         base_url=base_url,
         rate=100,
-        identifier='qa-21',
+        identifier='qa',
         baseline=999)
     assert app.name == 'test' and app.loop_duration == 60 and app.base_url == base_url
-    assert app.cur_timestamp == mytime.epoch and app.rate == 100 and app.identifier == 'qa-21'
+    assert app.cur_timestamp == mytime.epoch and app.rate == 100 and app.identifier == 'qa'
     assert app.baseline == 999
 
 
@@ -57,9 +57,9 @@ def test_app_str():
         loop_duration=60,
         base_url=base_url,
         rate=100,
-        identifier='qa-21',
+        identifier='qa',
         baseline=100)
-    s = 'App(name="test", replay_start_time=2018-03-26 19:07:39 UTC, loop_duration=60, base_url="http://shadowreader.example.com", identifier="qa-21", rate=100, cur_timestamp=1522091259, baseline=100)'
+    s = 'App(name="test", replay_start_time=2018-03-26 19:07:39 UTC, loop_duration=60, base_url="http://shadowreader.example.com", identifier="qa", rate=100, cur_timestamp=1522091259, baseline=100)'
     assert str(app) == s
 
 
@@ -72,6 +72,6 @@ def test_validate_base_url():
         loop_duration=60,
         base_url=base_url,
         rate=100,
-        identifier='qa-21',
+        identifier='qa',
         baseline=100)
     assert app.base_url == 'https://shadowreader.example.com'

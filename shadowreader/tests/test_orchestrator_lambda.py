@@ -27,7 +27,7 @@ def test_orchestrator_lambda_handler():
             "loop_duration":     1,
             "replay_start_time": "2018-3-20-17-06",
             "base_url":          "http://shadowreader.example.com",
-            "identifier":        "qa-21",
+            "identifier":        "qa",
             },
         "overrides":    [{
             "app":               "test-app1",
@@ -35,7 +35,7 @@ def test_orchestrator_lambda_handler():
             "loop_duration":     1,
             "replay_start_time": "2018-3-20-17-06",
             "base_url":          "http://shadowreader.example.com",
-            "identifier":        "qa-11",
+            "identifier":        "qa",
             }],
         'timezone':     'US/Pacific'
         }

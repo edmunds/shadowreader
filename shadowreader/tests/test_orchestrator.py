@@ -56,7 +56,7 @@ def test_init_apps_from_test_params_w_override():
             "loop_duration": 60,
             "replay_start_time": "2018-3-20-16-00",
             "base_url": "http://shadowreader.example.com",
-            "identifier": "qa-21",
+            "identifier": "qa",
         },
         "overrides": [{
             "app": "test-app1",
@@ -64,14 +64,14 @@ def test_init_apps_from_test_params_w_override():
             "loop_duration": 30,
             "replay_start_time": "2018-3-20-17-00",
             "base_url": "http://shadowreader.example.com",
-            "identifier": "qa-11",
+            "identifier": "qa",
         }, {
             "app": "test-app2",
             "rate": 0,
             "loop_duration": 30,
             "replay_start_time": "2018-3-20-17-00",
             "base_url": "http://shadowreader.example.com",
-            "identifier": "qa-11",
+            "identifier": "qa",
         }],
         'timezone':
         'US/Pacific'
@@ -84,7 +84,7 @@ def test_init_apps_from_test_params_w_override():
         replay_start_time=MyTime(epoch=1521590400),
         rate=50,
         base_url='http://shadowreader.example.com',
-        identifier='qa-11',
+        identifier='qa',
         loop_duration=30,
         baseline=0
     )

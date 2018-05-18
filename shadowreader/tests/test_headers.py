@@ -28,7 +28,7 @@ def test_user_agent_generation_for_past_w_identifier():
             replay_start_time=mytime,
             loop_duration=60,
             base_url=base_url,
-            identifier='qa-21',
+            identifier='qa',
             rate=100,
             baseline=0
     )
@@ -36,7 +36,7 @@ def test_user_agent_generation_for_past_w_identifier():
             shadowreader_type='past', stage=stage, app=app, step=step).headers
     user_agent = headers['x-request-id']
     print(headers)
-    assert user_agent == 'sr_local_past_qa-21_my-test-app_03-02-2018-19-59_60m_20'
+    assert user_agent == 'sr_local_past_qa_my-test-app_03-02-2018-19-59_60m_20'
 
 
 def test_user_agent_generation_for_past():
