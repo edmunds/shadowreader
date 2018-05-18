@@ -19,7 +19,8 @@ from typing import Callable
 
 from requests_futures.sessions import FuturesSession
 
-from utils.conf import sr_plugins
+from utils.conf import sr_plugins, sr_config
+timeouts = sr_config['timeouts']
 
 
 def send_requests_slave(load: list, delay: float, random_delay: bool,
@@ -69,8 +70,8 @@ def _send_futs_slave(session,
         if slave_headers:
             headers = slave_headers.main(load=l, headers=headers)
 
-        init_timeout = 1
-        resp_timeout = 3
+        init_timeout = timeouts['init_timeout']
+        resp_timeout = timeouts['resp_timeout']
         redirects = True
         if 'req_method' in l:
             if l['req_method'] == 'POST':
