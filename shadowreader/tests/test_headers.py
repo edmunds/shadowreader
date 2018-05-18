@@ -22,7 +22,7 @@ def test_user_agent_generation_for_past_w_identifier():
     mytime = MyTime(epoch=1520020741)
     stage = 'local'
     step = 1234
-    base_url = 'http://testing-www.pytest123.com'
+    base_url = 'http://shadowreader.example.com'
     app = App(
             name='my-test-app',
             replay_start_time=mytime,
@@ -43,7 +43,7 @@ def test_user_agent_generation_for_past():
     mytime = MyTime(epoch=1520020741)
     stage = 'local'
     step = 1234
-    base_url = 'http://testing-www.pytest123.com'
+    base_url = 'http://shadowreader.example.com'
     app = App(
             name='my-test-app',
             replay_start_time=mytime,
