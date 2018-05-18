@@ -93,7 +93,7 @@ functions:
       #  All values except "identifier" must be properly configured.
 
       # "base_url" - Here, you can specify the base URL which will prefix the URIs collected from ELB logs.
-      #              It will be prefixed with "http://" if "http://" or "https://" is not specified.
+      #              It will be prefixed with "https://" if "http://" or "https://" is not specified.
       # "rate" - A percentage value at which Shadowreader will perform the load test.
       #          It accepts a float value larger than 0
       # "replay_start_time" - Shadowreader replays traffic from certain time periods for its load tests.

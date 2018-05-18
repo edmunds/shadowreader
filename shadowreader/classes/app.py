@@ -98,7 +98,7 @@ class App:
         if base_url.endswith('/'):
             base_url = base_url[:-1]
 
-        # If base_url does not specify http or https, prefix it with http://
+        # If base_url does not specify http or https, prefix it with https://
         if not (base_url.startswith('http://') or base_url.startswith('https://')):
-            base_url = f'http://{base_url}'
+            base_url = f'https://{base_url}'
         return base_url
