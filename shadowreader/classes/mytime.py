@@ -25,7 +25,7 @@ pst = timezone('US/Pacific')
 
 
 @total_ordering
-class MyTime():
+class MyTime:
     """
     Wrapper around datetime to make passing around timestamps easier
     If tzinfo is not set, it defaults to UTC
@@ -109,7 +109,7 @@ class MyTime():
         self._set_variables()
 
     @classmethod
-    def from_epoch(cls, *, epoch, tzinfo):
+    def from_epoch(cls, *, epoch, tzinfo) -> 'MyTime':
         tzinfo = cls._convert_to_timezone_obj(tzinfo)
 
         dt = datetime.utcfromtimestamp(epoch)
@@ -134,7 +134,7 @@ class MyTime():
 
     @staticmethod
     def _check_params_valid(dt, year, month, day, hour, minute, second,
-                            microsecond, epoch, tzinfo):
+                            microsecond, epoch, tzinfo) -> bool:
         # TODO: Implement fully
         if dt and any(
             [year, month, day, hour, minute, second, microsecond, epoch]):
@@ -173,15 +173,15 @@ class MyTime():
         date_format = '%Y.%m.%d'
         return self.dt.strftime(date_format)
 
-    def to_pst(self):
+    def to_pst(self) -> 'MyTime':
         dt = self.dt.astimezone(timezone('US/Pacific'))
         return MyTime(dt=dt, tzinfo=timezone('US/Pacific'))
 
-    def to_utc(self):
+    def to_utc(self) -> 'MyTime':
         dt = self.dt.astimezone(utc)
         return MyTime(dt=dt)
 
-    def add_timedelta(self, days=0, hours=0, minutes=0, seconds=0):
+    def add_timedelta(self, days=0, hours=0, minutes=0, seconds=0) -> 'MyTime':
         dt = self.dt + timedelta(
             days=days, hours=hours, minutes=minutes, seconds=seconds)
         return MyTime(dt=dt, tzinfo=self.tzinfo)
@@ -217,7 +217,7 @@ class MyTime():
         return hasattr(other, "dt") and hasattr(other, "epoch")
 
     @staticmethod
-    def set_to_replay_start_time_env_var(lambda_env_var, tzinfo):
+    def set_to_replay_start_time_env_var(lambda_env_var, tzinfo) -> 'MyTime':
         replay_start_time = list(map(int, lambda_env_var.split('-')))
 
         if len(replay_start_time) != 5:

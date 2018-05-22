@@ -26,16 +26,16 @@ def test_orchestrator_lambda_handler():
             "rate":              100,
             "loop_duration":     1,
             "replay_start_time": "2018-3-20-17-06",
-            "base_url":          "https://unit-test.pytest.com",
-            "identifier":        "qa-21",
+            "base_url":          "http://shadowreader.example.com",
+            "identifier":        "qa",
             },
         "overrides":    [{
             "app":               "test-app1",
             "rate":              50,
             "loop_duration":     1,
             "replay_start_time": "2018-3-20-17-06",
-            "base_url":          "https://unit-test.pytest.com",
-            "identifier":        "qa-11",
+            "base_url":          "http://shadowreader.example.com",
+            "identifier":        "qa",
             }],
         'timezone':     'US/Pacific'
         }

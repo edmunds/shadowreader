@@ -61,9 +61,9 @@ def test_consumer_slave_lambda_handler():
         'delay_per_req': 0.01,
         'delay_random': True,
         'load': load,
-        'rate': 100,
+        'rate': 1,
         'app': 'pytest',
-        'identifier': 'qa-21',
+        'identifier': 'qa',
         'parent_lambda': 'pytest',
         'child_lambda': 'sr-dev-consumer-slave',
         'headers': {

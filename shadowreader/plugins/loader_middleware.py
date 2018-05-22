@@ -21,14 +21,6 @@ def main(**kwargs) -> list:
     if not base_url:
         raise ValueError(f'Base URL was not set! {base_url}')
 
-    # If base_url ends with a "/", remove it
-    if base_url.endswith('/'):
-        base_url = base_url[:-1]
-
-    # If base_url does not specify http or https, prefix it with http://
-    if not (base_url.startswith('http://') or base_url.startswith('https://')):
-        base_url = f'http://{base_url}'
-
     if load:
         load = _transform_load(load, base_url)
 

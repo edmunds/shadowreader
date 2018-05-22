@@ -42,7 +42,7 @@ class App:
         if self.loop_duration == 0:
             self.loop_duration = 1
 
-        self.base_url = base_url
+        self.base_url = self._validate_base_url(base_url)
 
         if identifier:
             self.identifier = identifier
@@ -92,3 +92,13 @@ class App:
                 hasattr(other, "identifier") and
                 hasattr(other, "cur_timestamp")
                 )
+
+    def _validate_base_url(self, base_url):
+        # If base_url ends with a "/", remove it
+        if base_url.endswith('/'):
+            base_url = base_url[:-1]
+
+        # If base_url does not specify http or https, prefix it with https://
+        if not (base_url.startswith('http://') or base_url.startswith('https://')):
+            base_url = f'https://{base_url}'
+        return base_url

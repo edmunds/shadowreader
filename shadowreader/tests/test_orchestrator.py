@@ -25,7 +25,7 @@ def test_init_apps_from_test_params():
             "rate": 100,
             "loop_duration": 60,
             "replay_start_time": "2018-3-20-16-00",
-            "base_url": "http://qa-www.pytest.com",
+            "base_url": "http://shadowreader.example.com",
             "identifier": "qa",
         },
         "overrides": [],
@@ -39,7 +39,7 @@ def test_init_apps_from_test_params():
         replay_start_time=MyTime().from_epoch(
             epoch=1521586800, tzinfo='US/Pacific'),
         rate=100,
-        base_url='http://qa-www.pytest.com',
+        base_url='http://shadowreader.example.com',
         identifier='qa',
         loop_duration=60,
         baseline=0
@@ -55,23 +55,23 @@ def test_init_apps_from_test_params_w_override():
             "rate": 100,
             "loop_duration": 60,
             "replay_start_time": "2018-3-20-16-00",
-            "base_url": "http://qa-21-www.pytest.com",
-            "identifier": "qa-21",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
         },
         "overrides": [{
             "app": "test-app1",
             "rate": 50,
             "loop_duration": 30,
             "replay_start_time": "2018-3-20-17-00",
-            "base_url": "http://qa-11-www.pytest.com",
-            "identifier": "qa-11",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
         }, {
             "app": "test-app2",
             "rate": 0,
             "loop_duration": 30,
             "replay_start_time": "2018-3-20-17-00",
-            "base_url": "http://qa-11-www.pytest.com",
-            "identifier": "qa-11",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
         }],
         'timezone':
         'US/Pacific'
@@ -83,8 +83,8 @@ def test_init_apps_from_test_params_w_override():
         name='test-app1',
         replay_start_time=MyTime(epoch=1521590400),
         rate=50,
-        base_url='http://qa-11-www.pytest.com',
-        identifier='qa-11',
+        base_url='http://shadowreader.example.com',
+        identifier='qa',
         loop_duration=30,
         baseline=0
     )
