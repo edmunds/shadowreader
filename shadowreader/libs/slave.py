@@ -20,11 +20,11 @@ from typing import Callable
 from requests_futures.sessions import FuturesSession
 
 from utils.conf import sr_plugins, sr_config
-timeouts = sr_config['timeouts']
+
+timeouts = sr_config["timeouts"]
 
 
-def send_requests_slave(load: list, delay: float, random_delay: bool,
-                        headers: dict):
+def send_requests_slave(load: list, delay: float, random_delay: bool, headers: dict):
     """
     Start sending out requests, given load (URLs), delay (delay to insert between requests) and headers (User-Agent
     for the requests)
@@ -32,15 +32,15 @@ def send_requests_slave(load: list, delay: float, random_delay: bool,
     if len(load) == 0:
         return 0, 0, 0  # return futs, timeouts, exceptions
 
-    if sr_plugins.exists('circuit_breaker'):
-        cb = sr_plugins.load('circuit_breaker')
-        first_url = load[0]['url']
+    if sr_plugins.exists("circuit_breaker"):
+        cb = sr_plugins.load("circuit_breaker")
+        first_url = load[0]["url"]
         cb.main(url=first_url)
 
     session = FuturesSession(max_workers=5)
 
-    if sr_plugins.exists('slave_headers'):
-        slave_headers = sr_plugins.load('slave_headers')
+    if sr_plugins.exists("slave_headers"):
+        slave_headers = sr_plugins.load("slave_headers")
     else:
         slave_headers = None
 
@@ -50,18 +50,21 @@ def send_requests_slave(load: list, delay: float, random_delay: bool,
         delay=delay,
         random_delay=random_delay,
         headers=headers,
-        slave_headers=slave_headers)
+        slave_headers=slave_headers,
+    )
     futs, timeouts, exceptions = _collect_futs_slave(futs)
 
     return futs, timeouts, exceptions
 
 
-def _send_futs_slave(session,
-                     load: list,
-                     delay: float,
-                     random_delay: bool,
-                     headers: dict,
-                     slave_headers: Callable[[dict, dict], dict] = None):
+def _send_futs_slave(
+    session,
+    load: list,
+    delay: float,
+    random_delay: bool,
+    headers: dict,
+    slave_headers: Callable[[dict, dict], dict] = None,
+):
     """ Start load testing by sending requests to the specified URLs """
     futs = []
     for l in load:
@@ -70,30 +73,33 @@ def _send_futs_slave(session,
         if slave_headers:
             headers = slave_headers.main(load=l, headers=headers)
 
-        init_timeout = timeouts['init_timeout']
-        resp_timeout = timeouts['resp_timeout']
+        init_timeout = timeouts["init_timeout"]
+        resp_timeout = timeouts["resp_timeout"]
         redirects = True
-        if 'req_method' in l:
-            if l['req_method'] == 'POST':
+        if "req_method" in l:
+            if l["req_method"] == "POST":
                 fut = session.post(
-                    l['url'],
+                    l["url"],
                     headers=headers,
                     timeout=(init_timeout, resp_timeout),
-                    allow_redirects=redirects)
-            if l['req_method'] == 'GET':
+                    allow_redirects=redirects,
+                )
+            if l["req_method"] == "GET":
                 fut = session.get(
-                    l['url'],
+                    l["url"],
                     headers=headers,
                     timeout=(init_timeout, resp_timeout),
-                    allow_redirects=redirects)
+                    allow_redirects=redirects,
+                )
         else:
             fut = session.get(
-                l['url'],
+                l["url"],
                 headers=headers,
                 timeout=(init_timeout, resp_timeout),
-                allow_redirects=redirects)
+                allow_redirects=redirects,
+            )
 
-    futs.append({'live': l, 'fut': fut})
+    futs.append({"live": l, "fut": fut})
     return futs
 
 
@@ -110,15 +116,15 @@ def _collect_futs_slave(futs):
     errs = []
     for i, fut in enumerate(futs):
         try:
-            r = fut['fut'].result()
+            r = fut["fut"].result()
 
         except IOError as e:
-            errs.append(f'{type(e)}, {e}')
+            errs.append(f"{type(e)}, {e}")
             # print(type(e), e)
             timeouts += 1
 
         except Exception as e:
-            errs.append(f'{type(e)}, {e}')
+            errs.append(f"{type(e)}, {e}")
             # print(type(e), e)
             exceptions += 1
 
