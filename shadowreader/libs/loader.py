@@ -28,6 +28,19 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
         Transform them to a list of URLs
         Optional filters can filter out certain requests based on its attributes
     """
+    num_original_reqs = len(load)
+
+    # Given a rate and original load size, calculate the target load size
+    num_targeted_reqs = _calculate_target_load(
+        num_original_reqs, rate=rate, baseline=baseline)
+
+    # Increase of decrease the load by the calculated target load size
+    if baseline:
+        print(f'rate: target={num_targeted_reqs} / baseline={baseline} = {rate}%')
+    else:
+        print(
+            f'rate: target={num_targeted_reqs} / orig={num_original_reqs} = {rate}%'
+        )
 
     try:
         # If apply_filter key exists, set to True and there is a filter plugin
@@ -44,19 +57,14 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
         raise Exception(
             f'Error applying filters in filter_load(): {type(e)}, {e}')
 
-    num_original_reqs = len(load)
-
-    # Given a rate and original load size, calculate the target load size
-    num_targeted_reqs = _calculate_target_load(
-        num_original_reqs, rate=rate, baseline=baseline)
-
-    load = _loader(load, num_targeted_reqs, num_original_reqs)
-
-    # Increase of decrease the load by the calculated target load size
-    if baseline:
-        print(f'rate: {num_targeted_reqs} / {baseline} = {rate}%')
+    print(f'load_after_filter={len(load)}')
+    if num_targeted_reqs > len(load):
+        ratio = math.ceil(num_targeted_reqs / len(load))
+        load = load * ratio
+        load = _loader(load, num_targeted_reqs, num_original_reqs)
     else:
-        print(f'rate: {num_targeted_reqs} / {num_original_reqs} = {rate}%')
+        load = _loader(load, num_targeted_reqs, num_original_reqs)
+    print(f'load_after_loader={len(load)}')
 
     # Pass in URIs to plugin to transform into URLs
     if sr_plugins.exists('loader_middleware'):
@@ -69,6 +77,7 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
         }
         load = midware.main(**midware_input)
 
+    print(f'load_after_transform={len(load)}')
     return load
 
 
