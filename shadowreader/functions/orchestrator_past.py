@@ -18,7 +18,13 @@ import traceback
 from classes.headers import Headers
 from libs import lambda_init
 from libs.orchestrator import invoke_func
-from libs.orchestrator import init_filters, advance_app_timestamp, init_apps_from_test_params, generate_step_from_mytime, print_to_logs
+from libs.orchestrator import (
+    init_filters,
+    advance_app_timestamp,
+    init_apps_from_test_params,
+    generate_step_from_mytime,
+    print_to_logs,
+)
 from utils.conf import sr_plugins
 
 
@@ -33,15 +39,15 @@ def lambda_handler(event, context):
         """
 
         mytime, lambda_name, env_vars = lambda_init.init_lambda(context)
-        stage = env_vars['stage']
-        consumer_master_past_lambda = env_vars['consumer_master_past_name']
+        stage = env_vars["stage"]
+        consumer_master_past_lambda = env_vars["consumer_master_past_name"]
 
-        apps = init_apps_from_test_params(event)
+        apps, test_params = init_apps_from_test_params(event)
         filters = init_filters()
 
         step = generate_step_from_mytime(mytime)
 
-        print('step:', step)
+        print("step:", step)
         for app in apps:
             advance_app_timestamp(app, step)
 
@@ -50,20 +56,20 @@ def lambda_handler(event, context):
         # Invoke the consumer-master lambda for each app in apps
         for app in apps:
             headers = Headers(
-                shadowreader_type='past', stage=stage, app=app,
-                step=step).headers
+                shadowreader_type="past", stage=stage, app=app, step=step
+            ).headers
 
             consumer_event = {
-                'app': app.name,
-                'identifier': app.identifier,
-                'base_url': app.base_url,
-                'cur_timestamp': app.cur_timestamp,
-                'rate': app.rate,
-                'baseline': app.baseline,
-                'parent_lambda': lambda_name,
-                'child_lambda': consumer_master_past_lambda,
-                'headers': headers,
-                'filters': filters
+                "app": app.name,
+                "identifier": app.identifier,
+                "base_url": app.base_url,
+                "cur_timestamp": app.cur_timestamp,
+                "rate": app.rate,
+                "baseline": app.baseline,
+                "parent_lambda": lambda_name,
+                "child_lambda": consumer_master_past_lambda,
+                "headers": headers,
+                "filters": filters,
             }
             invoke_func(consumer_event, func=consumer_master_past_lambda)
 
@@ -74,23 +80,34 @@ def lambda_handler(event, context):
         metrics = []
         for app in apps:
             metric = {
-                'name': 'timestamp',
-                'stage': stage,
-                'lambda_name': lambda_name,
-                'app': app.name,
-                'identifier': app.identifier,
-                'mytime': mytime,
-                'val': app.cur_timestamp
+                "name": "timestamp",
+                "stage": stage,
+                "lambda_name": lambda_name,
+                "app": app.name,
+                "identifier": app.identifier,
+                "mytime": mytime,
+                "val": app.cur_timestamp,
             }
             metrics.append(metric)
 
-        if sr_plugins.exists('metrics'):
-            metric_emitter = sr_plugins.load('metrics')
+        if sr_plugins.exists("metrics"):
+            metric_emitter = sr_plugins.load("metrics")
             for metric in metrics:
                 metric_emitter.main(metric)
+
+        cur_params = {
+            "env_vars": env_vars,
+            "apps": apps,
+            "filters": filters,
+            "test_params": test_params,
+        }
+
+        if sr_plugins.exists("test_params_emitter"):
+            params_emitter = sr_plugins.load("test_params_emitter")
+            params_emitter.main(cur_params, lambda_name, mytime, stage)
 
     except Exception as e:
         trace = traceback.format_exc()
         raise Exception(trace)
 
-    return stage, consumer_event
+    return cur_params, consumer_event
