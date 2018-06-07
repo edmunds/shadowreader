@@ -14,25 +14,25 @@ See the License for the specific language governing permissions and
 """
 
 import json
+from pprint import pprint
+from typing import Tuple
 from os import getenv
 
 import boto3
 from pytz import timezone
-from pprint import pprint
+
 from classes.app import App
 from classes.mytime import MyTime
 from libs.validate import validate_test_params, validate_timezone
 from utils.conf import sr_plugins, env_vars
 
 
-def init_apps_from_test_params(event: dict = None) -> list:
+def init_apps_from_test_params(event: dict = None) -> Tuple[list, dict]:
     apps_to_test, test_params, overrides, tzinfo = _get_env_vars(event)
 
     _validate_params(
-        apps=apps_to_test,
-        test_params=test_params,
-        overrides=overrides,
-        tzinfo=tzinfo)
+        apps=apps_to_test, test_params=test_params, overrides=overrides, tzinfo=tzinfo
+    )
 
     validate_timezone(tzinfo)
 
@@ -44,19 +44,19 @@ def init_apps_from_test_params(event: dict = None) -> list:
     apps = _merge_app_dicts_to_list(apps, override_apps)
     apps = _filter_out_apps_w_rate_zero(apps)
 
-    return apps
+    return apps, test_params
 
 
 def _validate_params(**kwargs):
-    if sr_plugins.exists('test_params_validator'):
-        validator = sr_plugins.load('test_params_validator')
+    if sr_plugins.exists("test_params_validator"):
+        validator = sr_plugins.load("test_params_validator")
         validator.main(**kwargs)
 
 
 def _get_env_vars(event: dict):
     defaults = _check_for_defaults(event)
     env_vars = {}
-    env_vars_to_get = ['apps_to_test', 'test_params', 'overrides']
+    env_vars_to_get = ["apps_to_test", "test_params", "overrides"]
 
     for e in env_vars_to_get:
         if defaults:
@@ -68,16 +68,20 @@ def _get_env_vars(event: dict):
         env_vars[e] = env_var
 
     if defaults:
-        tzinfo = getenv('timezone', defaults['timezone'])
+        tzinfo = getenv("timezone", defaults["timezone"])
     else:
-        tzinfo = getenv('timezone', 'UTC')
+        tzinfo = getenv("timezone", "UTC")
 
-    return env_vars['apps_to_test'], env_vars['test_params'], env_vars[
-        'overrides'], tzinfo
+    return (
+        env_vars["apps_to_test"],
+        env_vars["test_params"],
+        env_vars["overrides"],
+        tzinfo,
+    )
 
 
 def _check_for_defaults(event):
-    if isinstance(event, dict) and 'apps_to_test' in event:
+    if isinstance(event, dict) and "apps_to_test" in event:
         return event
     else:
         return None
@@ -93,8 +97,7 @@ def _init_app_objs(apps_to_test: list, test_params: dict, tzinfo: timezone):
     return apps
 
 
-def _init_app_obj_from_params(app_name: str, params: dict,
-                              tzinfo: timezone) -> App:
+def _init_app_obj_from_params(app_name: str, params: dict, tzinfo: timezone) -> App:
     """
     "rate": 50,
     "loop_duration": 60,
@@ -103,21 +106,22 @@ def _init_app_obj_from_params(app_name: str, params: dict,
     "identifier": "qa",
     "env_to_test": "qa"
     """
-    rate = params['rate']
-    if 'baseline'in params:
-        baseline = params['baseline']
+    rate = params["rate"]
+    if "baseline" in params:
+        baseline = params["baseline"]
     else:
         baseline = 0
 
-    loop_duration = params['loop_duration']
+    loop_duration = params["loop_duration"]
 
-    replay_start_time = params['replay_start_time']
+    replay_start_time = params["replay_start_time"]
     replay_start_time = MyTime.set_to_replay_start_time_env_var(
-        replay_start_time, tzinfo=tzinfo)
+        replay_start_time, tzinfo=tzinfo
+    )
 
-    base_url = params['base_url']
+    base_url = params["base_url"]
 
-    identifier = params['identifier'] if 'identifier' in params else ''
+    identifier = params["identifier"] if "identifier" in params else ""
 
     return App(
         name=app_name,
@@ -126,13 +130,14 @@ def _init_app_obj_from_params(app_name: str, params: dict,
         base_url=base_url,
         rate=rate,
         baseline=baseline,
-        identifier=identifier)
+        identifier=identifier,
+    )
 
 
 def _init_overrides(overrides: dict, tzinfo: timezone) -> dict:
     apps = {}
     for override in overrides:
-        app_name = override['app']
+        app_name = override["app"]
         app = _init_app_obj_from_params(app_name, override, tzinfo)
         apps[app_name] = app
     return apps
@@ -152,8 +157,10 @@ def _filter_out_apps_w_rate_zero(apps: list) -> list:
 
 def init_filters():
     """ Initialize filters that will filter out certain requests from load test replay """
-    defaults = '{"app": "*", "uri": "*", "status": [200, 300, 400, 500], "apply_filter": false}'
-    filters = json.loads(getenv('filters', defaults))
+    defaults = (
+        '{"app": "*", "uri": "*", "status": [200, 300, 400, 500], "apply_filter": false}'
+    )
+    filters = json.loads(getenv("filters", defaults))
     return filters
 
 
@@ -173,13 +180,13 @@ def advance_app_timestamp(app, step):
         app.cur_timestamp = app.cur_timestamp + (step % app.loop_duration) * 60
     except ArithmeticError as e:
         raise ArithmeticError(
-            f'{type(e)}, {e}: app.cur_timestamp = {app.cur_timestamp} + ({step} % {app.loop_duration}) * 60'
+            f"{type(e)}, {e}: app.cur_timestamp = {app.cur_timestamp} + ({step} % {app.loop_duration}) * 60"
         )
     return app
 
 
 def invoke_func(event, func):
-    cl = boto3.client('lambda', region_name=env_vars['region'])
+    cl = boto3.client("lambda", region_name=env_vars["region"])
     args = json.dumps(event)
     resp = cl.invoke_async(FunctionName=func, InvokeArgs=args)
     return resp
@@ -194,7 +201,7 @@ def generate_step_from_mytime(mytime) -> int:
 
 def print_to_logs(consumer_event, apps):
     if consumer_event and apps:
-        msg = '\n'.join([x.name for x in apps])
-        print(f'Invoke consumer-master-past for: {len(apps)} apps\n{msg}')
-        print('Sample consumer_event:')
+        msg = "\n".join([x.name for x in apps])
+        print(f"Invoke consumer-master-past for: {len(apps)} apps\n{msg}")
+        print("Sample consumer_event:")
         pprint(consumer_event)
