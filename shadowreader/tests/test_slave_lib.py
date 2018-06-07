@@ -19,7 +19,7 @@ from requests_futures.sessions import FuturesSession
 
 
 def test_send_requests_slave(monkeypatch):
-    load = [{"url": "http://shadowreader.example.com", "req_method": "POST"}]
+    load = [{"url": "http://shadowreader.example.com", "req_method": "POST", "request_uri": '/test'}]
     headers = {"User-Agent": "sr_pytest"}
 
     fut = FuturesSession().get("http://www.example.com")

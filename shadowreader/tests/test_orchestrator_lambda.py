@@ -19,7 +19,7 @@ from classes.mytime import MyTime
 from functions import orchestrator_past
 
 
-def test_orchestrator_lambda_handler():
+def test_orchestrator_lambda_handler(monkeypatch):
     defaults = {
         'apps_to_test': ['test-app1'],
         'test_params':  {
@@ -39,10 +39,14 @@ def test_orchestrator_lambda_handler():
             }],
         'timezone':     'US/Pacific'
         }
+    monkeypatch.setattr("utils.conf.sr_plugins.exists", lambda x: False)
 
-    res, consumer_event = orchestrator_past.lambda_handler(defaults, {})
+    cur_params, consumer_event = orchestrator_past.lambda_handler(defaults, {})
     timestamp = consumer_event['cur_timestamp']
     mytime = MyTime.set_to_replay_start_time_env_var(defaults['test_params']['replay_start_time'],
                                                      timezone('US/Pacific'))
-    assert res == 'local' and timestamp == mytime.epoch
+    from pprint import pprint
+    pprint(cur_params)
+    rate = cur_params['test_params']['rate']
+    assert rate == 100 and timestamp == mytime.epoch
     assert consumer_event['app'] == defaults['apps_to_test'][0]

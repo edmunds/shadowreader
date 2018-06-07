@@ -32,7 +32,7 @@ def test_init_apps_from_test_params():
         'timezone': 'US/Pacific'
     }
 
-    apps = orchestrator.init_apps_from_test_params(defaults)
+    apps, test_params = orchestrator.init_apps_from_test_params(defaults)
     app1 = apps[0]
     app2 = App(
         name='test-app1',
@@ -77,7 +77,7 @@ def test_init_apps_from_test_params_w_override():
         'US/Pacific'
     }
 
-    apps = orchestrator.init_apps_from_test_params(defaults)
+    apps, test_params = orchestrator.init_apps_from_test_params(defaults)
     app1 = apps[0]
     app1_copy = App(
         name='test-app1',
