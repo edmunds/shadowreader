@@ -12,7 +12,10 @@ In the chart above, the blue line is the request rate of Shadowreader while in o
 
 Support for Python3.6+
 
-Support for Application Load Balancers (Classic Load Balancers support planned)
+Support for replaying logs from two types of Elastic Load Balancers:
+
+- Application Load Balancer
+- Classic Load Balancer
 
 # Quick start
 
