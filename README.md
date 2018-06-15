@@ -1,16 +1,16 @@
 # Shadowreader
 
-![Shadowreader](imgs/shadowreader.png)
+<p align="center">
+  <img src="https://github.com/edmunds/shadowreader/blob/master/imgs/shadowreader.png?raw=true" alt="ShadowReader Logo"/>
+</p>
 
 > Serverless load testing system for replaying production traffic into testing environments.
 
-Shadowreader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from ELB logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
+Shadowreader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
 ![](imgs/example1.png)
 
-In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website. Shadowreader throughput closely mimics real user traffic.
-
-Support for Python3.6+
+In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website. Shadowreader mimics real user traffic by replaying URLs at the same rate as the live website.
 
 Support for replaying logs from two types of Elastic Load Balancers:
 
