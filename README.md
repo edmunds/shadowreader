@@ -10,7 +10,9 @@ Shadowreader has the ability to replay production traffic to a destination of yo
 
 ![](imgs/example1.png)
 
-In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website. Shadowreader mimics real user traffic by replaying URLs at the same rate as the live website.
+In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website.
+
+Shadowreader mimics real user traffic by replaying URLs at the same rate as the live website. Being serverless, it can scale up to and above 50,000+ requests / min.
 
 Support for replaying logs from two types of Elastic Load Balancers:
 
