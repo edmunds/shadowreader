@@ -24,3 +24,6 @@ config:
                        'region', 'stage', 'parsed_data_bucket',
                        'consumer_master_past_name', 'consumer_slave_name'
                    ]
+  timeouts:
+    init_timeout: 1 # Requests sent by the load test must establish a connection under this many seconds otherwise it will result in a timeout
+    resp_timeout: 3 # Requests sent by the load test must return a response under this many seconds otherwise it will result in a timeout
