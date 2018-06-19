@@ -25,7 +25,7 @@ from libs.orchestrator import (
     generate_step_from_mytime,
     print_to_logs,
 )
-from utils.conf import sr_plugins
+from utils.conf import sr_plugins, sr_config
 
 
 def lambda_handler(event, context):
@@ -96,7 +96,6 @@ def lambda_handler(event, context):
                 metric_emitter.main(metric)
 
         cur_params = {
-            "env_vars": env_vars,
             "apps": apps,
             "filters": filters,
             "test_params": test_params,
@@ -104,7 +103,7 @@ def lambda_handler(event, context):
 
         if sr_plugins.exists("test_params_emitter"):
             params_emitter = sr_plugins.load("test_params_emitter")
-            params_emitter.main(cur_params, lambda_name, mytime, stage)
+            params_emitter.main(cur_params, lambda_name, mytime, stage, env_vars, sr_config, sr_plugins._sr_plugins)
 
     except Exception as e:
         trace = traceback.format_exc()
