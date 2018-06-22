@@ -1,7 +1,7 @@
 # Shadowreader
 
 <p align="center">
-  <img src="imgs/shadowreader.png" alt="ShadowReader Logo" width="25%" height="25%"/>
+  <img src="imgs/shadowreader.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
 
 > Serverless load testing system for replaying production traffic into testing environments.
@@ -9,7 +9,7 @@
 Shadowreader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
 <p align="center">
-  <img src="imgs/example1.png" alt="Example1" width="50%" height="50%"/>
+  <img src="imgs/example1.png" alt="Example1" width="75%" height="75%"/>
 </p>
 
 In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website.
@@ -94,14 +94,20 @@ environment:
 
 ### Enabling ELB logs
 
+Click on your ELB in the AWS console then scroll to the `attributes` section
+
 <p align="center">
-  <img src="imgs/ELB-logs-how-to.png" alt="elb-how-to1" width="50%" height="50%"/>
+  <img src="imgs/elb-how-to-1.png" alt="elb-how-to-1" width="75%" height="75%"/>
+</p>
+
+<p align="center">
+  <img src="imgs/ELB-logs-how-to.png" alt="elb-how-to-2" width="75%" height="75%"/>
 </p>
 
 ### Finding your access_logs_bucket and path
 
 <p align="center">
-  <img src="imgs/elb-logs-2.png" alt="elb-how-to2" width="50%" height="50%"/>
+  <img src="imgs/elb-logs-2.png" alt="elb-how-to-3" width="75%" height="75%"/>
 </p>
 
 ## 3. Install the Serverless framework
@@ -127,7 +133,7 @@ serverless deploy --stage dev --region region_of_your_choice
 ## How it works
 
 <p align="center">
-  <img src="imgs/sr-architecture.png" alt="how-it-works" width="60%" height="60%"/>
+  <img src="imgs/sr-architecture.png" alt="how-it-works" width="75%" height="75%"/>
 </p>
 
 ## Usage example
