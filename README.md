@@ -1,14 +1,16 @@
 # Shadowreader
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/imgs/shadowreader.png?raw=true" alt="ShadowReader Logo"/>
+  <img src="imgs/shadowreader.png" alt="ShadowReader Logo" width="25%" height="25%"/>
 </p>
 
 > Serverless load testing system for replaying production traffic into testing environments.
 
 Shadowreader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
-![](imgs/example1.png)
+<p align="center">
+  <img src="imgs/example1.png" alt="Example1" width="50%" height="50%"/>
+</p>
 
 In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website.
 
@@ -92,11 +94,15 @@ environment:
 
 ### Enabling ELB logs
 
-![](imgs/ELB-logs-how-to.png)
+<p align="center">
+  <img src="imgs/ELB-logs-how-to.png" alt="elb-how-to1" width="50%" height="50%"/>
+</p>
 
 ### Finding your access_logs_bucket and path
 
-![](imgs/elb-logs-2.png)
+<p align="center">
+  <img src="imgs/elb-logs-2.png" alt="elb-how-to2" width="50%" height="50%"/>
+</p>
 
 ## 3. Install the Serverless framework
 
@@ -118,9 +124,11 @@ serverless plugin install -n serverless-python-requirements
 serverless deploy --stage dev --region region_of_your_choice
 ```
 
-## Architecture
+## How it works
 
-![](imgs/sr-architecture.png)
+<p align="center">
+  <img src="imgs/sr-architecture.png" alt="how-it-works" width="60%" height="60%"/>
+</p>
 
 ## Usage example
 
