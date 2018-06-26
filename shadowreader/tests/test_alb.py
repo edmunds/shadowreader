@@ -44,7 +44,6 @@ def test_alb_producer():
         testing=testing)
 
     print('--ddb-items--')
-    pprint(ddb_items)
     assert len(ddb_items) > 0
     return ddb_items == [{
         'app': 'myELB',

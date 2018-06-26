@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 """
 
 import traceback
+
 from libs.lambda_init import init_lambda, init_producer
 from utils.conf import sr_config, sr_plugins
 

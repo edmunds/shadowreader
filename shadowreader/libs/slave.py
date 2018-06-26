@@ -58,12 +58,12 @@ def send_requests_slave(load: list, delay: float, random_delay: bool, headers: d
 
 
 def _send_futs_slave(
-    session,
-    load: list,
-    delay: float,
-    random_delay: bool,
-    headers: dict,
-    slave_headers: Callable[[dict, dict], dict] = None,
+        session,
+        load: list,
+        delay: float,
+        random_delay: bool,
+        headers: dict,
+        slave_headers: Callable[[dict, dict], dict] = None,
 ):
     """ Start load testing by sending requests to the specified URLs """
     futs = []
@@ -77,30 +77,42 @@ def _send_futs_slave(
         resp_timeout = timeouts["resp_timeout"]
         redirects = True
         if "req_method" in l:
-            if l["req_method"] == "POST":
-                fut = session.post(
+            req_method = l["req_method"].lower()
+            if req_method == "get" or req_method == "post":
+                fut = _send_request(
+                    session,
+                    req_method,
                     l["url"],
-                    headers=headers,
-                    timeout=(init_timeout, resp_timeout),
-                    allow_redirects=redirects,
+                    headers,
+                    init_timeout,
+                    resp_timeout,
+                    redirects,
                 )
-            if l["req_method"] == "GET":
-                fut = session.get(
-                    l["url"],
-                    headers=headers,
-                    timeout=(init_timeout, resp_timeout),
-                    allow_redirects=redirects,
-                )
+            else:
+                # Other request methods not supported currently
+                fut = None
         else:
-            fut = session.get(
-                l["url"],
-                headers=headers,
-                timeout=(init_timeout, resp_timeout),
-                allow_redirects=redirects,
+            fut = _send_request(
+                session, "get", l["url"], headers, init_timeout, resp_timeout, redirects
             )
 
-    futs.append({"live": l, "fut": fut})
+        if fut:
+            futs.append({"live": l, "fut": fut})
+
     return futs
+
+
+def _send_request(
+        session, req_method, url, headers, init_timeout, resp_timeout, redirects
+):
+    fut = session.request(
+        req_method,
+        url,
+        headers=headers,
+        timeout=(init_timeout, resp_timeout),
+        allow_redirects=redirects,
+    )
+    return fut
 
 
 def _do_sleep(delay, random_delay):

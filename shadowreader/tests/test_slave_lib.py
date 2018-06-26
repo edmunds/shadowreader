@@ -15,20 +15,21 @@ See the License for the specific language governing permissions and
 
 from libs import slave
 
+from requests_futures.sessions import FuturesSession
 
-def test_send_requests_slave():
-    load = [{
-        'url':
-        'https://postman-echo.com/post',
-        'req_method':
-        'POST'
-    }]
-    headers = {'User-Agent': 'sr_pytest'}
+
+def test_send_requests_slave(monkeypatch):
+    load = [{"url": "http://shadowreader.example.com", "req_method": "POST", "request_uri": '/test'}]
+    headers = {"User-Agent": "sr_pytest"}
+
+    fut = FuturesSession().get("http://www.example.com")
+    monkeypatch.setattr("libs.slave._send_request", lambda a, b, c, d, e, f, g: fut)
 
     futs, timeouts, exceptions = slave.send_requests_slave(
-        load=load, delay=0.1, random_delay=True, headers=headers)
+        load=load, delay=0.1, random_delay=True, headers=headers
+    )
 
     assert len(futs) == 1
 
-    fut = futs[0]['fut']
+    fut = futs[0]["fut"]
     assert fut.result().status_code == 200
