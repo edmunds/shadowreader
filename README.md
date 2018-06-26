@@ -1,7 +1,7 @@
 # ShadowReader
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/imgs/shadowreader.png" alt="ShadowReader Logo" width="50%" height="50%"/>
+  <img src="https://ysawa0.github.io/sr-assets/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
 
 > Serverless load testing system for replaying production traffic into testing environments.
@@ -9,7 +9,7 @@
 ShadowReader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/imgs/example1.png" alt="Example1" width="75%" height="75%"/>
+  <img src="https://ysawa0.github.io/sr-assets/example1.png" alt="Example1" width="75%" height="75%"/>
 </p>
 
 In the chart above, the blue line is the request rate of ShadowReader while in orange is the load on the production website.
@@ -97,17 +97,17 @@ environment:
 Click on your ELB in the AWS console then scroll to the `attributes` section
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/imgs/elb-how-to-1.png" alt="elb-how-to-1" width="75%" height="75%"/>
+  <img src="https://ysawa0.github.io/sr-assets/elb-how-1.png" alt="elb-how-to-1" width="75%" height="75%"/>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/imgs/ELB-logs-how-to.png" alt="elb-how-to-2" width="75%" height="75%"/>
+  <img src="https://ysawa0.github.io/sr-assets/elb-how-2.png" alt="elb-how-to-2" width="75%" height="75%"/>
 </p>
 
 ### Finding your access_logs_bucket and path
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/imgs/elb-logs-2.png" alt="elb-how-to-3" width="75%" height="75%"/>
+  <img src="https://ysawa0.github.io/sr-assets/elb-how-3.png" alt="elb-how-to-3" width="75%" height="75%"/>
 </p>
 
 ## 3. Install the Serverless framework
@@ -133,7 +133,7 @@ serverless deploy --stage dev --region region_of_your_choice
 ## How it works
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/imgs/sr-architecture.png" alt="how-it-works" width="90%" height="90%"/>
+  <img src="https://ysawa0.github.io/sr-assets/how-it-works.png" alt="how-it-works" width="90%" height="90%"/>
 </p>
 
 ## Usage example
