@@ -1,20 +1,20 @@
-# Shadowreader
+# ShadowReader
 
 <p align="center">
-  <img src="imgs/shadowreader.png" alt="ShadowReader Logo" width="25%" height="25%"/>
+  <img src="imgs/shadowreader.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
 
 > Serverless load testing system for replaying production traffic into testing environments.
 
-Shadowreader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
+ShadowReader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
 <p align="center">
-  <img src="imgs/example1.png" alt="Example1" width="50%" height="50%"/>
+  <img src="imgs/example1.png" alt="Example1" width="75%" height="75%"/>
 </p>
 
-In the chart above, the blue line is the request rate of Shadowreader while in orange is the load on the production website.
+In the chart above, the blue line is the request rate of ShadowReader while in orange is the load on the production website.
 
-Shadowreader mimics real user traffic by replaying URLs at the same rate as the live website. Being serverless, it can scale up to and above 50,000+ requests / min.
+ShadowReader mimics real user traffic by replaying URLs at the same rate as the live website. Being serverless, it can scale up to and above 50,000+ requests / min.
 
 Support for replaying logs from two types of Elastic Load Balancers:
 
@@ -27,10 +27,10 @@ Support for replaying logs from two types of Elastic Load Balancers:
 
 Copy the contents of `shadowreader/serverless.example.yml` and use it to create new file `shadowreader/serverless.yml`. Then update the variables listed below.
 
-Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via Serverless.
+Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via the [Serverless framework](https://serverless.com/).
 
 ```
-# Required. This is your project name. It is to ensure that the S3 bucket used by Shadowreader has unique naming.
+# Required. This is your project name. It is to ensure that the S3 bucket used by ShadowReader has unique naming.
 custom:
   my_project_name: my-unique-project-name
 ```
@@ -57,12 +57,12 @@ orchestrator-past:
 
   # "base_url" - Here, you can specify the base URL which will prefix the URIs collected from ELB logs.
   #              It should not end with a "/"
-  # "rate" - A percentage value at which Shadowreader will perform the load test.
+  # "rate" - A percentage value at which ShadowReader will perform the load test.
   #          It accepts a float value larger than 0
-  # "replay_start_time" - Shadowreader replays traffic from certain time periods for its load tests.
+  # "replay_start_time" - ShadowReader replays traffic from certain time periods for its load tests.
   #                       This is the starting time for the replay period.
-  #                       If Shadowreader has not collected data for this time period,
-  #                       it will not run.
+  #                       If ShadowReader has not collected data for this time period,
+  #                       no requests will be sent in the load test.
   # "loop_duration" - This is an integer value, denominated in minutes.
   #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
   #                   For example, if "replay_start_time" = "2018-1-1-10-0" and "loop_duration" = 60,
@@ -72,7 +72,7 @@ orchestrator-past:
 ```
 
 ```
-# Optional. If you are testing inside a VPC, these must be set to give Shadowreader VPC access.
+# Optional. If you are testing inside a VPC, these must be set to give ShadowReader VPC access.
 vpc:
   securityGroupIds:
     - sg-your-security-group-id
@@ -94,14 +94,20 @@ environment:
 
 ### Enabling ELB logs
 
+Click on your ELB in the AWS console then scroll to the `attributes` section
+
 <p align="center">
-  <img src="imgs/ELB-logs-how-to.png" alt="elb-how-to1" width="50%" height="50%"/>
+  <img src="imgs/elb-how-to-1.png" alt="elb-how-to-1" width="75%" height="75%"/>
+</p>
+
+<p align="center">
+  <img src="imgs/ELB-logs-how-to.png" alt="elb-how-to-2" width="75%" height="75%"/>
 </p>
 
 ### Finding your access_logs_bucket and path
 
 <p align="center">
-  <img src="imgs/elb-logs-2.png" alt="elb-how-to2" width="50%" height="50%"/>
+  <img src="imgs/elb-logs-2.png" alt="elb-how-to-3" width="75%" height="75%"/>
 </p>
 
 ## 3. Install the Serverless framework
@@ -120,19 +126,19 @@ serverless plugin install -n serverless-python-requirements
 ## 4. Deploy to AWS
 
 ```
-# Deploy Shadowreader to your AWS account
+# Deploy ShadowReader to your AWS account
 serverless deploy --stage dev --region region_of_your_choice
 ```
 
 ## How it works
 
 <p align="center">
-  <img src="imgs/sr-architecture.png" alt="how-it-works" width="60%" height="60%"/>
+  <img src="imgs/sr-architecture.png" alt="how-it-works" width="75%" height="75%"/>
 </p>
 
 ## Usage example
 
-Shadowreader can be used for performance testing applications.
+ShadowReader can be used for performance testing applications.
 
 For monitoring results, the recommended way is to create CloudWatch dashboards that display metrics such as RequestCount, TargetResponseTime and CPU/MEM Utilization
 
