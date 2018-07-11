@@ -148,8 +148,9 @@ By comparing status codes and latency between the original request and replayed 
 
 Please see the [contributing guide](CONTRIBUTING.md) for more specifics.
 
-## Authors
+## Contact
 
+Please use the [Issues](https://github.com/edmunds/shadowreader/issues) page or contact
 [Yuki Sawa](https://github.com/ysawa0) – ysawa@edmunds.com
 
 ## License
