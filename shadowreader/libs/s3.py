@@ -19,6 +19,7 @@ from utils.conf import env_vars
 from classes.mytime import MyTime
 from botocore.exceptions import ClientError
 
+
 aws_region = env_vars['region']
 
 s3 = boto3.client('s3', region_name=aws_region)
@@ -157,7 +158,6 @@ def _filter_files_on_time(files: list, start_time: MyTime,
     for f in files:
         timestamp = f['LastModified']
         if start_time.dt <= timestamp < end_time.dt:
-            print(f'{start_time.dt} <= {timestamp} < {end_time.dt}')
             filtered.append(f)
     return filtered
 

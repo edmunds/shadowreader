@@ -90,3 +90,6 @@ def test_init_apps_from_test_params_w_override():
     )
 
     assert app1 == app1_copy and len(apps) == 1
+
+if __name__ == '__main__':
+    test_init_apps_from_test_params()

@@ -185,6 +185,7 @@ def main(*,
          parsed_data_bucket: str,
          testing: dict = None) -> Tuple[list, str]:
 
+    mytime = mytime.to_utc()
     if apps:
         app = identifier = apps[0]
     else:

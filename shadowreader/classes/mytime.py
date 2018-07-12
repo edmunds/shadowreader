@@ -233,3 +233,9 @@ class MyTime:
             'tzinfo': tzinfo
         }
         return MyTime(**kwargs)
+
+    def format_as_env_var(self) -> str:
+        """ Format as string in format expected in the severless.yml test parameters.
+        Example formatting: 2018-6-19-0-0
+        """
+        return self.dt.strftime('%Y-%m-%d-%H-%M')

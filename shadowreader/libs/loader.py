@@ -57,6 +57,9 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
         raise Exception(
             f'Error applying filters in filter_load(): {type(e)}, {e}')
 
+    if len(load) == 0:
+        return load
+
     print(f'load_after_filter={len(load)}')
     if num_targeted_reqs > len(load):
         ratio = math.ceil(num_targeted_reqs / len(load))
@@ -74,6 +77,7 @@ def loader_main(*, load: list, rate: float, baseline: int, base_url: str,
             'rate': rate,
             'base_url': base_url,
             'filters': filters,
+            'baseline': baseline
         }
         load = midware.main(**midware_input)
 

@@ -25,14 +25,15 @@ def test_alb_producer():
 
     mytime = MyTime(
         year=2018,
-        month=5,
-        day=6,
+        month=6,
+        day=21,
         hour=14,
-        minute=30,
+        minute=7,
         second=0,
         microsecond=0,
         tzinfo='US/Pacific')
 
+    mytime = mytime.to_utc()
     access_logs_bucket = 'sr-oss-dummy-data/AWSLogs/123456789/elasticloadbalancing/us-east-1/'
     testing = {'put_file': False}
 
