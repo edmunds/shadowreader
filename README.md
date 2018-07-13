@@ -1,10 +1,10 @@
 # ShadowReader
 
+<a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
+
 <p align="center">
   <img src="https://ysawa0.github.io/sr-assets/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
-
-> Serverless load testing system for replaying production traffic into testing environments.
 
 ShadowReader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
@@ -128,6 +128,20 @@ serverless plugin install -n serverless-python-requirements
 ```
 # Deploy ShadowReader to your AWS account
 serverless deploy --stage dev --region region_of_your_choice
+```
+
+```
+You may run into this error while deploying:
+
+  File "/usr/local/Cellar/python/3.6.4_4/Frameworks/Python.framework/Versions/3.6/lib/python3.6/distutils/command/install.py", line 248, in finalize_options
+    "must supply either home or prefix/exec-prefix -- not both")
+  distutils.errors.DistutilsOptionError: must supply either home or prefix/exec-prefix -- not both
+
+This is due to the way Homebrew installs Python. Run this command from the base project directory to fix it.
+
+echo '[install]\nprefix=' > shadowreader/setup.cfg
+
+See here for more details: https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
 ```
 
 ## How it works
