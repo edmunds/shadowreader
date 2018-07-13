@@ -1,0 +1,30 @@
+# Copyright 2018 Edmunds.com, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+
+language: python
+python:
+  - '3.6'
+env:
+  global:
+    - stage=local
+    - region=us-east-1
+    - parsed_data_bucket=sr-oss-oss-parsed-data
+    - consumer_slave_name=sr-oss-consumer-slave
+    - consumer_master_past_name=sr-oss-consumer-master-past
+
+install:
+  - pip install -r shadowreader/requirements.txt
+  - wget https://raw.githubusercontent.com/edmunds/shadowreader/add-CI/shadowreader/tests/shadowreader-ci.yml --output-document=shadowreader.yml
+
+script:
+  - pytest shadowreader/tests/unit
