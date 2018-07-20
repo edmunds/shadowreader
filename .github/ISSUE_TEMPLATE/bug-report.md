@@ -25,6 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 - Load Balancer Type [e.g. Application Load Balancer or Classic Load Balancer]
 - Other AWS resources [e.g. S3, Lambda]
+- Contents of shadowreader.yml and serverless.yml that may be causing the issue
 - Serverless version or plugins
 
 **Additional context**
