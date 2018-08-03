@@ -1,8 +1,10 @@
 # ShadowReader
 
-<a href="https://travis-ci.com/edmunds/shadowreader"><img alt="Build Status" src="https://travis-ci.com/edmunds/shadowreader.svg?branch=master"></a>
-<a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
-
+<p align="center">
+  <a href="https://travis-ci.com/edmunds/shadowreader"><img alt="Build Status" src="https://travis-ci.com/edmunds/shadowreader.svg?branch=master"></a>
+  <a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
+  <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
 <p align="center">
   <img src="https://ysawa0.github.io/sr-assets/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
@@ -161,8 +163,8 @@ serverless plugin install -n serverless-python-requirements
 ## 3.5 Set up virtual env
 
 ```sh
-python3 -m venv ~/.venvs/sr-env
-source ~/.venvs/sr-env/bin/activate
+python3 -m venv ~/.virtualenvs/sr-env
+source ~/.virtualenvs/sr-env/bin/activate
 ```
 
 ## 4. Deploy to AWS
@@ -191,6 +193,7 @@ echo '[install]\nprefix=' > setup.cfg
 More details here:
 
 https://github.com/UnitedIncome/serverless-python-requirements#applebeersnake-mac-brew-installed-python-notes
+
 https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
 
 ## How it works
@@ -211,9 +214,9 @@ By comparing status codes and latency between the original request and replayed 
 
 Please see the [contributing guide](CONTRIBUTING.md) for more specifics.
 
-## Contact
+## Contact/Support
 
-Please use the [Issues](https://github.com/edmunds/shadowreader/issues) page or contact
+Please use the [Issues](https://github.com/edmunds/shadowreader/issues) page or contact/email
 [Yuki Sawa](https://github.com/ysawa0) – ysawa@edmunds.com
 
 ## License
