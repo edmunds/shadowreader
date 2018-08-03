@@ -27,7 +27,13 @@ Support for replaying logs from two types of load balancers:
 
 ## 1. serverless.yml set up
 
-Copy the contents of `shadowreader/serverless.example.yml` and use it to create new file `shadowreader/serverless.yml`. Then update the variables listed below.
+Copy contents of `shadowreader/serverless.example.yml` to `shadowreader/serverless.yml`.
+
+```
+cp shadowreader/serverless.example.yml shadowreader/serverless.yml
+```
+
+Then update the variables listed below.
 
 Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via the [Serverless framework](https://serverless.com/).
 
@@ -85,7 +91,17 @@ vpc:
 
 ## 2. shadowreader.yml set up
 
-Copy the contents of `shadowreader/shadowreader.example.yml` and use it to create file `shadowreader/shadowreader.yml`
+Copy contents of `shadowreader/shadowreader.example.yml` to `shadowreader/shadowreader.yml`
+
+```
+cp shadowreader/serverless.example.yml shadowreader/serverless.yml
+```
+
+ShadowReader must read/parse your access logs stored on S3 before it can replay it during a load test.
+
+The `access_logs_bucket` variable must point to the S3 bucket/path with your ELB logs.
+
+Once this value is set and SR is deployed to your AWS account, it will start ingesting the logs in real-time.
 
 ```
 # Required. This variable must be set according to where your ELB logs are being written to.
@@ -95,6 +111,10 @@ environment:
 ```
 
 ### Enabling ELB logs
+
+By enabling ELB logs, AWS will start writing your access logs to a S3 bucket in real-time.
+
+ShadowReader has the ability to read these logs and replay it once ingested.
 
 Click on your ELB in the AWS console then scroll to the `attributes` section
 
@@ -125,6 +145,13 @@ npm install -g serverless
 serverless plugin install -n serverless-python-requirements
 ```
 
+## 3.5 Set up virtual env
+
+```sh
+python3 -m venv ~/.venvs/sr-env
+source ~/.venvs/sr-env/bin/activate
+```
+
 ## 4. Deploy to AWS
 
 ```
@@ -132,19 +159,26 @@ serverless plugin install -n serverless-python-requirements
 serverless deploy --stage dev --region region_of_your_choice
 ```
 
+You may run into this error:
+
 ```
-You may run into this error while deploying:
-
-  File "/usr/local/Cellar/python/3.6.4_4/Frameworks/Python.framework/Versions/3.6/lib/python3.6/distutils/command/install.py", line 248, in finalize_options
-    "must supply either home or prefix/exec-prefix -- not both")
-  distutils.errors.DistutilsOptionError: must supply either home or prefix/exec-prefix -- not both
-
-This is due to the way Homebrew installs Python. Run this command from the base project directory to fix it.
-
-echo '[install]\nprefix=' > shadowreader/setup.cfg
-
-See here for more details: https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
+File "/usr/local/Cellar/python/3.6.4_4/Frameworks/Python.framework/Versions/3.6/lib/python3.6/distutils/command/install.py", line 248, in finalize_options
+  "must supply either home or prefix/exec-prefix -- not both")
+distutils.errors.DistutilsOptionError: must supply either home or prefix/exec-prefix -- not both
 ```
+
+This happens with Brew installed Python.
+Run this to fix it.
+
+```
+(while inside the shadowreader folder)
+echo '[install]\nprefix=' > setup.cfg
+```
+
+More details here:
+
+https://github.com/UnitedIncome/serverless-python-requirements#applebeersnake-mac-brew-installed-python-notes
+https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
 
 ## How it works
 
