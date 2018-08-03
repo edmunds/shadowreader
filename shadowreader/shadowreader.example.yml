@@ -14,6 +14,11 @@
 plugins:
   loader_middleware: loader_middleware
   replay_mode: replay_past
+
+  # Required:
+  # The 'producer' section controls the type of load balancer logs to parse.
+  # If you want to parse Application Load Balancer logs, enter "alb"
+  # If you want to parse Classic Load Balancer logs, enter "elb"
   producer: alb
 
 config:

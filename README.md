@@ -110,6 +110,19 @@ environment:
     access_logs_bucket: AWSLogs/123456789/elasticloadbalancing
 ```
 
+The `producer` section controls the type of load balancer logs to parse.
+
+If you want to parse Application Load Balancer logs, enter "alb"
+
+If you want to parse Classic Load Balancer logs, enter "elb"
+
+```
+# Required
+# Default is alb
+plugins:
+  producer: alb
+```
+
 ### Enabling ELB logs
 
 By enabling ELB logs, AWS will start writing your access logs to a S3 bucket in real-time.
