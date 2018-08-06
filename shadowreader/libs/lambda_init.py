@@ -41,27 +41,29 @@ def init_lambda(context, print_time=True):
      'memory_limit_in_mb': '256'}
     """
     mytime = get_and_print_current_time(print_time)
-    stage = env_vars['stage']
+    stage = env_vars["stage"]
 
     try:
         lambda_name = context.function_name
     except AttributeError as e:
-        lambda_name = f'sr-{stage}-error-getting-context.function_name'
+        lambda_name = f"sr-{stage}-error-getting-context.function_name"
 
     return mytime, lambda_name, env_vars
 
 
 def init_env_vars_apis():
     # TODO: Init other Env vars
-    env_vars_to_get = ['region', 'stage', 'synthetic_data_table']
+    env_vars_to_get = ["region", "stage", "synthetic_data_table"]
 
     env_vars = {}
     for env_var in env_vars_to_get:
-        env_vars[env_var] = getenv(env_var, '')
+        env_vars[env_var] = getenv(env_var, "")
 
     for env_var, val in env_vars.items():
         if not val:
-            msg = f'Invalid Lambda environment variable detected. env_var: {env_var}, env_var val: {val}'
+            msg = (
+                f"Invalid Lambda environment variable detected. env_var: {env_var}, env_var val: {val}"
+            )
             raise ValueError(msg)
 
     return env_vars
@@ -70,56 +72,56 @@ def init_env_vars_apis():
 def get_and_print_current_time(print_time):
     mytime = MyTime()
     if print_time:
-        print(f'Start time: {mytime}')
+        print(f"Start time: {mytime}")
     return mytime
 
 
 def init_consumer_master(event: dict):
     try:
-        app = event['app']
-        identifier = event['identifier']
-        base_url = event['base_url']
-        cur_timestamp = event['cur_timestamp']
-        rate = float(event['rate'])
-        headers = event['headers']
-        filters = event['filters']
-        baseline = event['baseline']
+        app = event["app"]
+        identifier = event["identifier"]
+        base_url = event["base_url"]
+        cur_timestamp = event["cur_timestamp"]
+        rate = float(event["rate"])
+        headers = event["headers"]
+        filters = event["filters"]
+        baseline = event["baseline"]
     except Exception as e:
         raise ValueError(
-            f'{type(e)}, {e}, error getting orchestration data from Lambda event json'
+            f"{type(e)}, {e}, error getting orchestration data from Lambda event json"
         )
 
     return app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline
 
 
 def init_consumer_slave(event: dict):
-    payload = event['payload']
+    payload = event["payload"]
     event = zipper.decompress(data=payload)
     event = json.loads(event)
 
     try:
-        app = event['app']
-        load = event['load']
-        identifier = event['identifier']
-        delay_random = event['delay_random']
-        delay_per_req = event['delay_per_req']
-        headers = event['headers']
+        app = event["app"]
+        load = event["load"]
+        identifier = event["identifier"]
+        delay_random = event["delay_random"]
+        delay_per_req = event["delay_per_req"]
+        headers = event["headers"]
     except KeyError as e:
         raise ValueError(
-            f'{type(e)}, {e}, error getting event json passed from consumer-master'
+            f"{type(e)}, {e}, error getting event json passed from consumer-master"
         )
     return app, load, identifier, delay_random, delay_per_req, headers
 
 
 def init_producer(lambda_event: dict = None) -> list:
-    if lambda_event and 'apps_to_parse' in lambda_event:
-        apps = lambda_event['apps_to_parse']
+    if lambda_event and "apps_to_parse" in lambda_event:
+        apps = lambda_event["apps_to_parse"]
     else:
-        apps = getenv('apps_to_parse', '[]')
+        apps = getenv("apps_to_parse", "[]")
         apps = json.loads(apps)
 
-    if sr_plugins.exists('test_params_validator'):
-        validator = sr_plugins.load('test_params_validator')
+    if sr_plugins.exists("test_params_validator"):
+        validator = sr_plugins.load("test_params_validator")
         validator.main(apps=apps)
 
     return apps

@@ -24,28 +24,31 @@ def validate_test_params(params: dict, tzinfo: timezone):
     if not params:
         return
 
-    required_params = [
-        'rate', 'loop_duration', 'replay_start_time', 'base_url'
-    ]
+    required_params = ["rate", "loop_duration", "replay_start_time", "base_url"]
     for p in required_params:
-        assert p in params, f'Required Lambda env var: {p} not found in test_params: {params}'
+        assert (
+            p in params
+        ), f"Required Lambda env var: {p} not found in test_params: {params}"
 
-    rate = params['rate']
+    rate = params["rate"]
     assert isinstance(rate, float) or isinstance(
-        rate, int), f'Rate must be an int or float'
-    assert 0 <= rate, f'Test param rate: {rate} must be a float above 0'
+        rate, int
+    ), f"Rate must be an int or float"
+    assert 0 <= rate, f"Test param rate: {rate} must be a float above 0"
 
-    loop_duration = params['loop_duration']
-    assert isinstance(loop_duration, int), f'Loop duration must be an int'
-    assert 0 < loop_duration, f'Loop duration must be greater than 0'
+    loop_duration = params["loop_duration"]
+    assert isinstance(loop_duration, int), f"Loop duration must be an int"
+    assert 0 < loop_duration, f"Loop duration must be greater than 0"
 
-    replay_start_time = params['replay_start_time']
+    replay_start_time = params["replay_start_time"]
     replay_start_time = MyTime.set_to_replay_start_time_env_var(
-        replay_start_time, tzinfo)
+        replay_start_time, tzinfo
+    )
     assert isinstance(replay_start_time, MyTime)
 
 
 def validate_timezone(tzinfo: str):
     if tzinfo not in all_timezones:
         raise InvalidLambdaEnvVarError(
-            f'Timezone not recognized: {tzinfo}. Must be in pytz format')
+            f"Timezone not recognized: {tzinfo}. Must be in pytz format"
+        )

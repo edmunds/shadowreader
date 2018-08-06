@@ -24,8 +24,9 @@ def calculate_total_expected_execution_time(load_size: int) -> float:
     return total_expected_execution_time
 
 
-def calculate_delay_per_req(num_total_requests: int,
-                            total_expected_execution_time: float) -> float:
+def calculate_delay_per_req(
+    num_total_requests: int, total_expected_execution_time: float
+) -> float:
     """ Calculate the delay to insert between each request sent by slave lambda """
     delay_per_req = total_expected_execution_time / num_total_requests
     delay_per_req = round(delay_per_req, 3)

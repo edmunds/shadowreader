@@ -23,38 +23,33 @@ from libs.master import invoke_slave_lambdas
 from utils.conf import sr_plugins
 
 
-def emit_metrics(base_metric: dict, num_reqs_pre_filter_val: int,
-                 num_reqs_after_filter: int):
+def emit_metrics(
+    base_metric: dict, num_reqs_pre_filter_val: int, num_reqs_after_filter: int
+):
     """ Generate dicts to pass to metric emitter plugin """
     num_reqs_pre_filter = {
-        'name': 'num_requests_pre_filter',
-        'val': num_reqs_pre_filter_val
+        "name": "num_requests_pre_filter",
+        "val": num_reqs_pre_filter_val,
     }
     num_reqs_pre_filter = ChainMap(num_reqs_pre_filter, base_metric)
 
     num_reqs_pre_filter_all = {
-        'app': 'all',
-        'name': 'num_requests_pre_filter',
-        'val': num_reqs_pre_filter_val
+        "app": "all",
+        "name": "num_requests_pre_filter",
+        "val": num_reqs_pre_filter_val,
     }
     num_reqs_pre_filter_all = ChainMap(num_reqs_pre_filter_all, base_metric)
 
-    num_reqs = {'name': 'num_requests', 'val': num_reqs_after_filter}
+    num_reqs = {"name": "num_requests", "val": num_reqs_after_filter}
     num_reqs = ChainMap(num_reqs, base_metric)
 
-    num_reqs_all = {
-        'app': 'all',
-        'name': 'num_requests',
-        'val': num_reqs_after_filter
-    }
+    num_reqs_all = {"app": "all", "name": "num_requests", "val": num_reqs_after_filter}
     num_reqs_all = ChainMap(num_reqs_all, base_metric)
 
-    metrics = [
-        num_reqs_pre_filter, num_reqs_pre_filter_all, num_reqs, num_reqs_all
-    ]
+    metrics = [num_reqs_pre_filter, num_reqs_pre_filter_all, num_reqs, num_reqs_all]
 
-    if sr_plugins.exists('metrics'):
-        metric_emitter = sr_plugins.load('metrics')
+    if sr_plugins.exists("metrics"):
+        metric_emitter = sr_plugins.load("metrics")
         for metric in metrics:
             metric_emitter.main(metric)
 
@@ -74,46 +69,43 @@ def lambda_handler(event, context):
     """
     try:
         mytime, lambda_name, env_vars = init_lambda(context)
-        stage = env_vars['stage']
+        stage = env_vars["stage"]
 
         app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline = init_consumer_master(
-            event)
+            event
+        )
 
-        parsed_data_bucket = env_vars['parsed_data_bucket']
+        parsed_data_bucket = env_vars["parsed_data_bucket"]
 
-        replay_mode = sr_plugins.load('replay_mode')
+        replay_mode = sr_plugins.load("replay_mode")
         kwargs = {
-            'lambda_start_time': mytime,
-            'app_name': app,
-            'app_cur_timestamp': cur_timestamp
+            "lambda_start_time": mytime,
+            "app_name": app,
+            "app_cur_timestamp": cur_timestamp,
         }
         s3_parsed_data_key = replay_mode.main(**kwargs)
 
-        print(f's3://{parsed_data_bucket}/{s3_parsed_data_key}')
+        print(f"s3://{parsed_data_bucket}/{s3_parsed_data_key}")
 
         # Fetch from S3 the URLs to send for this load test
-        load = s3.fetch_from_s3(
-            key=s3_parsed_data_key, bucket=parsed_data_bucket)
+        load = s3.fetch_from_s3(key=s3_parsed_data_key, bucket=parsed_data_bucket)
 
         num_reqs_pre_filter = len(load)
 
         # Transform the URLs based on the test params and filters
         load = loader_main(
-            load=load,
-            rate=rate,
-            baseline=baseline,
-            base_url=base_url,
-            filters=filters)
+            load=load, rate=rate, baseline=baseline, base_url=base_url, filters=filters
+        )
 
         num_reqs_after_filter = len(load)
 
         # Init base metric dict
         base_metric = {
-            'stage': stage,
-            'lambda_name': lambda_name,
-            'app': app,
-            'identifier': identifier,
-            'mytime': mytime,
+            "stage": stage,
+            "lambda_name": lambda_name,
+            "app": app,
+            "identifier": identifier,
+            "mytime": mytime,
         }
 
         emit_metrics(base_metric, num_reqs_pre_filter, num_reqs_after_filter)
@@ -123,7 +115,8 @@ def lambda_handler(event, context):
             app=app,
             identifier=identifier,
             parent_lambda=lambda_name,
-            headers=headers)
+            headers=headers,
+        )
 
     except Exception as e:
         trace = traceback.format_exc()

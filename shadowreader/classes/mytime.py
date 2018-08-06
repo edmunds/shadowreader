@@ -22,7 +22,7 @@ from pytz import timezone, utc
 
 from classes.exceptions import InvalidLambdaEnvVarError
 
-pst = timezone('US/Pacific')
+pst = timezone("US/Pacific")
 
 
 @total_ordering
@@ -38,24 +38,27 @@ class MyTime:
     """
 
     # TODO: Raise errors when incompatible args set
-    def __init__(self,
-                 *,
-                 dt: datetime = None,
-                 year=0,
-                 month=0,
-                 day=0,
-                 hour=0,
-                 minute=0,
-                 second=0,
-                 microsecond=0,
-                 epoch=0,
-                 tzinfo: Union[timezone, str] = None):
+    def __init__(
+        self,
+        *,
+        dt: datetime = None,
+        year=0,
+        month=0,
+        day=0,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
+        epoch=0,
+        tzinfo: Union[timezone, str] = None,
+    ):
 
-        res = self._check_params_valid(dt, year, month, day, hour, minute,
-                                       second, microsecond, epoch, tzinfo)
+        res = self._check_params_valid(
+            dt, year, month, day, hour, minute, second, microsecond, epoch, tzinfo
+        )
         if not res:
             raise ValueError(
-                'Invalid combination of parameters passed to MyTime initialization'
+                "Invalid combination of parameters passed to MyTime initialization"
             )
 
         tzinfo = self._convert_to_timezone_obj(tzinfo)
@@ -79,8 +82,16 @@ class MyTime:
                 # Unfortunately using the tzinfo argument of the standard datetime constructors
                 # does not work with pytz for many timezones
                 self.dt = tzinfo.localize(
-                    datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute,
-                             dt.second, dt.microsecond))
+                    datetime(
+                        dt.year,
+                        dt.month,
+                        dt.day,
+                        dt.hour,
+                        dt.minute,
+                        dt.second,
+                        dt.microsecond,
+                    )
+                )
 
         elif epoch:
             self.dt = datetime.utcfromtimestamp(epoch)
@@ -90,27 +101,20 @@ class MyTime:
         else:
             if not all([year, month, day]):
                 raise ValueError(
-                    f'year, month, day must all be set: {year}, {month}, {day}'
+                    f"year, month, day must all be set: {year}, {month}, {day}"
                 )
             if tzinfo == utc:
                 self.dt = datetime(
-                    year,
-                    month,
-                    day,
-                    hour,
-                    minute,
-                    second,
-                    microsecond,
-                    tzinfo=tzinfo)
+                    year, month, day, hour, minute, second, microsecond, tzinfo=tzinfo
+                )
             else:
-                dt = datetime(year, month, day, hour, minute, second,
-                              microsecond)
+                dt = datetime(year, month, day, hour, minute, second, microsecond)
                 self.dt = tzinfo.localize(dt)
 
         self._set_variables()
 
     @classmethod
-    def from_epoch(cls, *, epoch, tzinfo) -> 'MyTime':
+    def from_epoch(cls, *, epoch, tzinfo) -> "MyTime":
         tzinfo = cls._convert_to_timezone_obj(tzinfo)
 
         dt = datetime.utcfromtimestamp(epoch)
@@ -125,7 +129,8 @@ class MyTime:
             minute=dt.minute,
             second=dt.second,
             microsecond=dt.microsecond,
-            tzinfo=tzinfo)
+            tzinfo=tzinfo,
+        )
 
     @staticmethod
     def _convert_to_timezone_obj(tzinfo):
@@ -134,14 +139,15 @@ class MyTime:
         return tzinfo
 
     @staticmethod
-    def _check_params_valid(dt, year, month, day, hour, minute, second,
-                            microsecond, epoch, tzinfo) -> bool:
+    def _check_params_valid(
+        dt, year, month, day, hour, minute, second, microsecond, epoch, tzinfo
+    ) -> bool:
         # TODO: Implement fully
-        if dt and any(
-            [year, month, day, hour, minute, second, microsecond, epoch]):
+        if dt and any([year, month, day, hour, minute, second, microsecond, epoch]):
             return False
         if epoch and any(
-            [year, month, day, hour, minute, second, microsecond, dt, tzinfo]):
+            [year, month, day, hour, minute, second, microsecond, dt, tzinfo]
+        ):
             return False
         return True
 
@@ -168,39 +174,46 @@ class MyTime:
             minute=self.minute,
             second=0,
             microsecond=0,
-            tzinfo=self.tzinfo)
+            tzinfo=self.tzinfo,
+        )
 
     def format_to_str_for_es_index(self) -> str:
-        date_format = '%Y.%m.%d'
+        date_format = "%Y.%m.%d"
         return self.dt.strftime(date_format)
 
-    def to_pst(self) -> 'MyTime':
-        dt = self.dt.astimezone(timezone('US/Pacific'))
-        return MyTime(dt=dt, tzinfo=timezone('US/Pacific'))
+    def to_pst(self) -> "MyTime":
+        dt = self.dt.astimezone(timezone("US/Pacific"))
+        return MyTime(dt=dt, tzinfo=timezone("US/Pacific"))
 
-    def to_utc(self) -> 'MyTime':
+    def to_utc(self) -> "MyTime":
         dt = self.dt.astimezone(utc)
         return MyTime(dt=dt)
 
-    def add_timedelta(self, days=0, hours=0, minutes=0, seconds=0) -> 'MyTime':
+    def add_timedelta(self, days=0, hours=0, minutes=0, seconds=0) -> "MyTime":
         dt = self.dt + timedelta(
-            days=days, hours=hours, minutes=minutes, seconds=seconds)
+            days=days, hours=hours, minutes=minutes, seconds=seconds
+        )
         return MyTime(dt=dt, tzinfo=self.tzinfo)
 
     def __repr__(self):
         tzinfo = f'timezone("{self.tzinfo}")'
         L = [
-            f'year={self.year}', f'month={self.month}', f'day={self.day}',
-            f'hour={self.hour}', f'minute={self.minute}',
-            f'second={self.second}', f'tzinfo={tzinfo}', f'epoch={self.epoch}'
+            f"year={self.year}",
+            f"month={self.month}",
+            f"day={self.day}",
+            f"hour={self.hour}",
+            f"minute={self.minute}",
+            f"second={self.second}",
+            f"tzinfo={tzinfo}",
+            f"epoch={self.epoch}",
         ]
 
         s = f'{self.__class__.__qualname__}({", ".join(map(str, L))})'
         return s
 
     def __str__(self):
-        s = self.dt.strftime('%Y-%m-%d %H:%M:%S')
-        return f'{s} {self.tzinfo}'
+        s = self.dt.strftime("%Y-%m-%d %H:%M:%S")
+        return f"{s} {self.tzinfo}"
 
     def __eq__(self, other):
         if not self._is_valid_operand(other):
@@ -291,4 +304,3 @@ class MyTime:
         Example formatting: 2018-6-19-0-0
         """
         return self.dt.strftime("%Y-%m-%d-%H-%M")
-

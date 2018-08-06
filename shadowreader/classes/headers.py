@@ -17,8 +17,7 @@ from classes.app import App
 
 
 class Headers:
-    def __init__(self, *, shadowreader_type: str, stage: str, app: App,
-                 step: int):
+    def __init__(self, *, shadowreader_type: str, stage: str, app: App, step: int):
         """
         Class for generating Headers such as the user-agent for load test requests
         :param shadowreader_type: Type of Shadowreader testing. Ex: "past", "synthetic", "capacity"
@@ -38,28 +37,26 @@ class Headers:
         """
         Generate a Dict with User-Agent for load tests
         """
-        headers = {
-            'x-request-id': self._generate_user_agent(base_user_agent),
-        }
+        headers = {"x-request-id": self._generate_user_agent(base_user_agent)}
 
         return headers
 
     def _generate_user_agent(self, user_agent: str) -> str:
-        if self.sr_type == 'past':
+        if self.sr_type == "past":
             user_agent += self._generate_user_agent_for_past_sr_type()
-        elif self.sr_type == 'syn':
+        elif self.sr_type == "syn":
             user_agent += self._generate_user_agent_for_synthetic()
-        elif self.sr_type == 'capacity':
+        elif self.sr_type == "capacity":
             pass  # TODO: Add more details to this type of user-agent
         else:
             raise NotImplementedError(
-                f'Implement _generate_user_agent() for other SR types. sr_type: {self.sr_type}'
+                f"Implement _generate_user_agent() for other SR types. sr_type: {self.sr_type}"
             )
         return user_agent
 
     def _generate_base_user_agent(self) -> str:
         """ Generate base_user_agent, an example is: 'sr_dev_past_qa' """
-        base_user_agent = f'sr_{self.stage}_{self.sr_type}_{self.identifier}'
+        base_user_agent = f"sr_{self.stage}_{self.sr_type}_{self.identifier}"
         return base_user_agent
 
     def _generate_user_agent_for_past_sr_type(self) -> str:
@@ -71,7 +68,9 @@ class Headers:
 
         replay_start_time = self._format_app_time_to_str()
 
-        user_agent_suffix = f'_{self.app.name}_{replay_start_time}_{self.app.loop_duration}m_{loop_iteration}'
+        user_agent_suffix = (
+            f"_{self.app.name}_{replay_start_time}_{self.app.loop_duration}m_{loop_iteration}"
+        )
 
         return user_agent_suffix
 
@@ -80,7 +79,7 @@ class Headers:
         Append to the base user agent info about the currently running test.
         Ex user-agent: _myapp_
         """
-        user_agent_suffix = f'_{self.app.name}'
+        user_agent_suffix = f"_{self.app.name}"
 
         return user_agent_suffix
 
@@ -91,5 +90,5 @@ class Headers:
 
     def _format_app_time_to_str(self) -> str:
         mytime = self.app.replay_start_time
-        date_format = '%m-%d-%Y-%H-%M'
+        date_format = "%m-%d-%Y-%H-%M"
         return mytime.dt.strftime(date_format)

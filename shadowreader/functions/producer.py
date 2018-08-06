@@ -22,8 +22,8 @@ from utils.conf import sr_config, sr_plugins
 def emit_metrics(metric: dict):
     """ Generate dicts to pass to metric emitter plugin """
 
-    if sr_plugins.exists('metrics'):
-        metric_emitter = sr_plugins.load('metrics')
+    if sr_plugins.exists("metrics"):
+        metric_emitter = sr_plugins.load("metrics")
         metric_emitter.main(metric)
 
 
@@ -33,30 +33,31 @@ def lambda_handler(event, context):
 
         apps = init_producer(event)
 
-        print(f'apps_to_parse: {apps}, size: {len(apps)}')
+        print(f"apps_to_parse: {apps}, size: {len(apps)}")
 
-        stage = env_vars['stage']
-        parsed_data_bucket = env_vars['parsed_data_bucket']
+        stage = env_vars["stage"]
+        parsed_data_bucket = env_vars["parsed_data_bucket"]
 
         mytime = mytime.set_seconds_to_zero()
 
-        access_logs_bucket = sr_config['access_logs_bucket']
+        access_logs_bucket = sr_config["access_logs_bucket"]
 
-        producer = sr_plugins.load('producer')
+        producer = sr_plugins.load("producer")
         ddb_items, identifier = producer.main(
             mytime=mytime,
             bucket_w_logs=access_logs_bucket,
             apps=apps,
-            parsed_data_bucket=parsed_data_bucket)
+            parsed_data_bucket=parsed_data_bucket,
+        )
 
         metric = {
-            'name': 'parsed_timestamp',
-            'stage': stage,
-            'lambda_name': lambda_name,
-            'app': 'all',
-            'identifier': identifier,
-            'mytime': mytime,
-            'val': mytime.epoch
+            "name": "parsed_timestamp",
+            "stage": stage,
+            "lambda_name": lambda_name,
+            "app": "all",
+            "identifier": identifier,
+            "mytime": mytime,
+            "val": mytime.epoch,
         }
         emit_metrics(metric)
 

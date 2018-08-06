@@ -58,12 +58,12 @@ def send_requests_slave(load: list, delay: float, random_delay: bool, headers: d
 
 
 def _send_futs_slave(
-        session,
-        load: list,
-        delay: float,
-        random_delay: bool,
-        headers: dict,
-        slave_headers: Callable[[dict, dict], dict] = None,
+    session,
+    load: list,
+    delay: float,
+    random_delay: bool,
+    headers: dict,
+    slave_headers: Callable[[dict, dict], dict] = None,
 ):
     """ Start load testing by sending requests to the specified URLs """
     futs = []
@@ -103,7 +103,7 @@ def _send_futs_slave(
 
 
 def _send_request(
-        session, req_method, url, headers, init_timeout, resp_timeout, redirects
+    session, req_method, url, headers, init_timeout, resp_timeout, redirects
 ):
     fut = session.request(
         req_method,

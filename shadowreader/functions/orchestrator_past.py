@@ -95,15 +95,19 @@ def lambda_handler(event, context):
             for metric in metrics:
                 metric_emitter.main(metric)
 
-        cur_params = {
-            "apps": apps,
-            "filters": filters,
-            "test_params": test_params,
-        }
+        cur_params = {"apps": apps, "filters": filters, "test_params": test_params}
 
         if sr_plugins.exists("test_params_emitter"):
             params_emitter = sr_plugins.load("test_params_emitter")
-            params_emitter.main(cur_params, lambda_name, mytime, stage, env_vars, sr_config, sr_plugins._sr_plugins)
+            params_emitter.main(
+                cur_params,
+                lambda_name,
+                mytime,
+                stage,
+                env_vars,
+                sr_config,
+                sr_plugins._sr_plugins,
+            )
 
     except Exception as e:
         trace = traceback.format_exc()

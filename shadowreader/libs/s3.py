@@ -20,17 +20,15 @@ from classes.mytime import MyTime
 from botocore.exceptions import ClientError
 
 
-aws_region = env_vars['region']
+aws_region = env_vars["region"]
 
-s3 = boto3.client('s3', region_name=aws_region)
-s3res = boto3.resource('s3', region_name=aws_region)
+s3 = boto3.client("s3", region_name=aws_region)
+s3res = boto3.resource("s3", region_name=aws_region)
 
 
-def put_on_s3(data: list,
-              mytime: MyTime,
-              app_name: str,
-              bucket: str,
-              put_file: bool = True) -> str:
+def put_on_s3(
+    data: list, mytime: MyTime, app_name: str, bucket: str, put_file: bool = True
+) -> str:
     key = _generate_s3_key(mytime, app_name)
     if put_file:
         resp = _put_on_s3(data, key=key, bucket=bucket)
@@ -38,17 +36,16 @@ def put_on_s3(data: list,
 
 
 def _put_on_s3(data, key: str, bucket: str) -> dict:
-    with open('/tmp/mydata', 'w') as f:
+    with open("/tmp/mydata", "w") as f:
         f.write(json.dumps(data, default=str))
 
-    resp = _put_file('/tmp/mydata', key, bucket=bucket)
+    resp = _put_file("/tmp/mydata", key, bucket=bucket)
     return resp
 
 
 def _generate_s3_key(mytime: MyTime, app_name: str) -> str:
-    prefix = _generate_key_prefix_base_on_time(
-        mytime=mytime, time_format='%Y/%m/%d/%H')
-    key = f'{app_name}/{prefix}/{mytime.epoch}'
+    prefix = _generate_key_prefix_base_on_time(mytime=mytime, time_format="%Y/%m/%d/%H")
+    key = f"{app_name}/{prefix}/{mytime.epoch}"
     return key
 
 
@@ -74,25 +71,27 @@ def _download_parsed_file(*, bucket: str, key: str) -> str:
     :param key: ex: "my-app/parsed_urls"
     :param bucket: ex: sr-my-parsed-data
     """
-    tmp_file_name = f'/tmp/logs'
+    tmp_file_name = f"/tmp/logs"
     try:
-        with open(tmp_file_name, 'wb') as data:
+        with open(tmp_file_name, "wb") as data:
             s3.download_fileobj(bucket, key, data)
     except ClientError as e:
         #  If no URLs were found, then return an empty list/load
-        if e.args[
-                0] == 'An error occurred (404) when calling the HeadObject operation: Not Found':
-            print(f'URL data was not found at s3://{bucket}/{key}')
-            return '[]'
+        if (
+            e.args[0]
+            == "An error occurred (404) when calling the HeadObject operation: Not Found"
+        ):
+            print(f"URL data was not found at s3://{bucket}/{key}")
+            return "[]"
         #  Otherwise raise error
         else:
             raise ValueError(
-                f'{e}, Error downloading file from S3, for s3://{bucket}/{key}'
+                f"{e}, Error downloading file from S3, for s3://{bucket}/{key}"
             ) from None
 
     except Exception as e:
         raise ValueError(
-            f'{e}, Error downloading file from S3, for s3://{bucket}/{key}'
+            f"{e}, Error downloading file from S3, for s3://{bucket}/{key}"
         ) from None
 
     try:
@@ -100,7 +99,7 @@ def _download_parsed_file(*, bucket: str, key: str) -> str:
             s3_data = f.read()
     except Exception as e:
         raise ValueError(
-            f'{e}, Error downloading file from S3, for s3://{bucket}/{key}'
+            f"{e}, Error downloading file from S3, for s3://{bucket}/{key}"
         ) from None
 
     return s3_data
@@ -111,7 +110,7 @@ def _download_parsed_file(*, bucket: str, key: str) -> str:
 
 def fetch_logs_on_s3_alb(bucket, key_prefix, mytime, time_offset):
     files = _list_folder_contents(bucket, key_prefix)
-    print('# files pre filter:', len(files))
+    print("# files pre filter:", len(files))
 
     start_time = mytime.add_timedelta(minutes=-time_offset)
     end_time = mytime.add_timedelta(minutes=time_offset)
@@ -121,11 +120,12 @@ def fetch_logs_on_s3_alb(bucket, key_prefix, mytime, time_offset):
     return files_filtered, start_time
 
 
-def fetch_file_names_on_s3(bucket: str, key_prefix: str, mytime: MyTime,
-                           time_offset: int):
+def fetch_file_names_on_s3(
+    bucket: str, key_prefix: str, mytime: MyTime, time_offset: int
+):
     files = _list_folder_contents(bucket, key_prefix)
 
-    print('# files pre filter:', len(files))
+    print("# files pre filter:", len(files))
 
     start_time = mytime.add_timedelta(minutes=-time_offset)
     end_time = mytime
@@ -136,18 +136,17 @@ def fetch_file_names_on_s3(bucket: str, key_prefix: str, mytime: MyTime,
 
 
 def _list_folder_contents(bucket, key_prefix):
-    paginator = s3.get_paginator('list_objects')
+    paginator = s3.get_paginator("list_objects")
     iterator = paginator.paginate(Bucket=bucket, Prefix=key_prefix)
 
     files = []
     for page in iterator:
-        files += page['Contents']
+        files += page["Contents"]
 
     return files
 
 
-def _filter_files_on_time(files: list, start_time: MyTime,
-                          end_time: MyTime) -> list:
+def _filter_files_on_time(files: list, start_time: MyTime, end_time: MyTime) -> list:
     """
     :param files: List of files on S3
     :param start_time: Time the file's timestamp should be after
@@ -156,14 +155,14 @@ def _filter_files_on_time(files: list, start_time: MyTime,
     """
     filtered = []
     for f in files:
-        timestamp = f['LastModified']
+        timestamp = f["LastModified"]
         if start_time.dt <= timestamp < end_time.dt:
             filtered.append(f)
     return filtered
 
 
 def delete_tmp_file():
-    os.remove('/tmp/logs')
+    os.remove("/tmp/logs")
 
 
 def put_payload_on_s3(*, payload: dict, bucket: str, mytime: MyTime):
@@ -172,10 +171,10 @@ def put_payload_on_s3(*, payload: dict, bucket: str, mytime: MyTime):
     for app, data in payload.items():
         s3_key = put_on_s3(data, mytime, app, bucket)
         ddb_item = {
-            'timestamp': mytime.epoch,
-            's3_key': s3_key,
-            'app': app,
-            'num_uris': len(data)
+            "timestamp": mytime.epoch,
+            "s3_key": s3_key,
+            "app": app,
+            "num_uris": len(data),
         }
         ddb_items.append(ddb_item)
     return ddb_items
