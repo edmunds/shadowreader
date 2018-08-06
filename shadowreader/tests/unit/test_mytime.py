@@ -103,9 +103,32 @@ def test_init_from_replay_start_time():
     replay_start_time = "2018-2-5-18-15"  # epoch time for 2018-2-5, 6:15PM PST is 1517883300
     mytime = MyTime.set_to_replay_start_time_env_var(replay_start_time,
                                                      timezone('US/Pacific'))
-    print(mytime)
-    print(mytime.epoch)
     assert mytime.epoch == 1517883300
+
+
+def test_init_from_replay_start_time_w_isoformat():
+    # Test that ISO 8601 formatted times are parsed correctly
+    # Test for Thursday, August 2, 2018 12:30:00 AM GMT-07:00 DST
+    replay_start_times = [
+        "2018-08-02T00:30",
+        "2018-08-02T00:30:40",
+        "2018-08-02T00:30:40.873460",
+        "2018-08-02T00:30:40.873460-07:00",
+        "2018-08-02T00:30:40.873Z",
+        "2018-08-02T00:30:40.873+10:00",
+    ]
+    for t in replay_start_times:
+        mytime = MyTime.set_to_replay_start_time_env_var(t, timezone("US/Pacific"))
+        assert mytime.epoch == 1533195000
+
+
+def test_strip_timezone_from_isoformat():
+    # Test that ISO 8601 formatted times with timezone
+    # have the timezone part removed
+    times = ["2018-08-03T08:30:00.00011+10:00" "2018-08-03T13:52:19.235608-07:00"]
+    for time in times:
+        time_stripped = MyTime._strip_timezone_from_isoformat(time)
+        assert time[:-6] == time_stripped
 
 
 def test_add_timedelta():
@@ -117,9 +140,6 @@ def test_add_timedelta():
             minute=0,
             tzinfo=timezone('US/Pacific'))
     mytime_plus_65_mins = mytime.add_timedelta(minutes=65)
-    print(mytime)
-    print(mytime.epoch)
-    print(mytime_plus_65_mins.tzinfo)
     assert (mytime.epoch + 60 * 65) == mytime_plus_65_mins.epoch
     assert str(mytime_plus_65_mins.tzinfo) == 'US/Pacific'
 

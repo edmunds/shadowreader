@@ -16,6 +16,7 @@ See the License for the specific language governing permissions and
 from datetime import datetime, timedelta
 from functools import total_ordering
 from typing import Union
+import re
 
 from pytz import timezone, utc
 
@@ -217,25 +218,77 @@ class MyTime:
         return hasattr(other, "dt") and hasattr(other, "epoch")
 
     @staticmethod
-    def set_to_replay_start_time_env_var(lambda_env_var, tzinfo) -> 'MyTime':
-        replay_start_time = list(map(int, lambda_env_var.split('-')))
+    def set_to_replay_start_time_env_var(lambda_env_var: str, tzinfo: str) -> "MyTime":
+        """ First, try parsing the time as ISO format.
+        If that fails, fall back to legacy format which is: year-month-day-hour-minute
+        ex: "2018-6-28-8-40"
+        """
+        lambda_env_var = MyTime._strip_timezone_from_isoformat(lambda_env_var)
+        replay_start_time = MyTime._try_isoformat(lambda_env_var, tzinfo)
+        if replay_start_time:
+            return replay_start_time
+        else:
+            replay_start_time = list(map(int, lambda_env_var.split("-")))
 
-        if len(replay_start_time) != 5:
-            raise InvalidLambdaEnvVarError(
-                f'replay_start_time value was not valid: {lambda_env_var}')
+            if len(replay_start_time) != 5:
+                raise InvalidLambdaEnvVarError(
+                    f"replay_start_time value was not valid: {replay_start_time}"
+                )
 
-        kwargs = {
-            'year': replay_start_time[0],
-            'month': replay_start_time[1],
-            'day': replay_start_time[2],
-            'hour': replay_start_time[3],
-            'minute': replay_start_time[4],
-            'tzinfo': tzinfo
-        }
-        return MyTime(**kwargs)
+            kwargs = {
+                "year": replay_start_time[0],
+                "month": replay_start_time[1],
+                "day": replay_start_time[2],
+                "hour": replay_start_time[3],
+                "minute": replay_start_time[4],
+                "tzinfo": tzinfo,
+            }
+            return MyTime(**kwargs)
+
+    @staticmethod
+    def _try_isoformat(formatted_time: str, tzinfo: str) -> Union["MyTime", None]:
+        """ Try parsing formatted_time as ISO format """
+        formats = [
+            "%Y-%m-%dT%H:%M",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%dT%H:%M:%S.%f",
+            "%Y-%m-%dT%H:%M:%S.%fZ",
+            "%Y-%m-%dT%H:%M:%S.%f%Z",
+            "%Y-%m-%dT%H:%M:%S.%f%z",
+        ]
+        for f in formats:
+            try:
+                replay_start_time = datetime.strptime(formatted_time, f)
+                kwargs = {
+                    "year": replay_start_time.year,
+                    "month": replay_start_time.month,
+                    "day": replay_start_time.day,
+                    "hour": replay_start_time.hour,
+                    "minute": replay_start_time.minute,
+                    "tzinfo": tzinfo,
+                }
+                return MyTime(**kwargs)
+            except ValueError as e:
+                pass
+        return None
+
+    @staticmethod
+    def _strip_timezone_from_isoformat(formatted_time: str) -> str:
+        """ Strip timezone from ISO format string
+            Ex: '2018-08-03T08:30:00.000+10:00' => '2018-08-03T08:30:00.000'
+        """
+        pattern = (
+            r"[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}.[\d]+(\+|-)[\d]{2}:[\d]{2}"
+        )
+        match = re.match(pattern, formatted_time)
+        if match:
+            return formatted_time[:-6]
+        else:
+            return formatted_time
 
     def format_as_env_var(self) -> str:
         """ Format as string in format expected in the severless.yml test parameters.
         Example formatting: 2018-6-19-0-0
         """
-        return self.dt.strftime('%Y-%m-%d-%H-%M')
+        return self.dt.strftime("%Y-%m-%d-%H-%M")
+

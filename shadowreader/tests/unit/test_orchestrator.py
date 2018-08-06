@@ -20,8 +20,8 @@ from libs import orchestrator
 
 def test_init_apps_from_test_params():
     defaults = {
-        'apps_to_test': ['test-app1', 'test-app2', 'test-app3'],
-        'test_params': {
+        "apps_to_test": ["test-app1", "test-app2", "test-app3"],
+        "test_params": {
             "rate": 100,
             "loop_duration": 60,
             "replay_start_time": "2018-3-20-16-00",
@@ -29,20 +29,19 @@ def test_init_apps_from_test_params():
             "identifier": "qa",
         },
         "overrides": [],
-        'timezone': 'US/Pacific'
+        "timezone": "US/Pacific",
     }
 
     apps, test_params = orchestrator.init_apps_from_test_params(defaults)
     app1 = apps[0]
     app2 = App(
-        name='test-app1',
-        replay_start_time=MyTime().from_epoch(
-            epoch=1521586800, tzinfo='US/Pacific'),
+        name="test-app1",
+        replay_start_time=MyTime().from_epoch(epoch=1521586800, tzinfo="US/Pacific"),
         rate=100,
-        base_url='http://shadowreader.example.com',
-        identifier='qa',
+        base_url="http://shadowreader.example.com",
+        identifier="qa",
         loop_duration=60,
-        baseline=0
+        baseline=0,
     )
 
     assert app1 == app2 and len(apps) == 3
@@ -50,46 +49,74 @@ def test_init_apps_from_test_params():
 
 def test_init_apps_from_test_params_w_override():
     defaults = {
-        'apps_to_test': ['test-app1', 'test-app2'],
-        'test_params': {
+        "apps_to_test": ["test-app1", "test-app2"],
+        "test_params": {
             "rate": 100,
             "loop_duration": 60,
             "replay_start_time": "2018-3-20-16-00",
             "base_url": "http://shadowreader.example.com",
             "identifier": "qa",
         },
-        "overrides": [{
-            "app": "test-app1",
-            "rate": 50,
-            "loop_duration": 30,
-            "replay_start_time": "2018-3-20-17-00",
-            "base_url": "http://shadowreader.example.com",
-            "identifier": "qa",
-        }, {
-            "app": "test-app2",
-            "rate": 0,
-            "loop_duration": 30,
-            "replay_start_time": "2018-3-20-17-00",
-            "base_url": "http://shadowreader.example.com",
-            "identifier": "qa",
-        }],
-        'timezone':
-        'US/Pacific'
+        "overrides": [
+            {
+                "app": "test-app1",
+                "rate": 50,
+                "loop_duration": 30,
+                "replay_start_time": "2018-3-20-17-00",
+                "base_url": "http://shadowreader.example.com",
+                "identifier": "qa",
+            },
+            {
+                "app": "test-app2",
+                "rate": 0,
+                "loop_duration": 30,
+                "replay_start_time": "2018-3-20-17-00",
+                "base_url": "http://shadowreader.example.com",
+                "identifier": "qa",
+            },
+        ],
+        "timezone": "US/Pacific",
     }
 
     apps, test_params = orchestrator.init_apps_from_test_params(defaults)
     app1 = apps[0]
     app1_copy = App(
-        name='test-app1',
+        name="test-app1",
         replay_start_time=MyTime(epoch=1521590400),
         rate=50,
-        base_url='http://shadowreader.example.com',
-        identifier='qa',
+        base_url="http://shadowreader.example.com",
+        identifier="qa",
         loop_duration=30,
-        baseline=0
+        baseline=0,
     )
 
     assert app1 == app1_copy and len(apps) == 1
 
-if __name__ == '__main__':
-    test_init_apps_from_test_params()
+
+def test_init_apps_from_test_params_w_isoformat():
+    defaults = {
+        "apps_to_test": ["test-app1", "test-app2", "test-app3"],
+        "test_params": {
+            "rate": 100,
+            "loop_duration": 60,
+            "replay_start_time": "2018-08-02T00:30",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
+        },
+        "overrides": [],
+        "timezone": "US/Pacific",
+    }
+
+    apps, test_params = orchestrator.init_apps_from_test_params(defaults)
+    app1 = apps[0]
+    app2 = App(
+        name="test-app1",
+        replay_start_time=MyTime().from_epoch(epoch=1533195000, tzinfo="US/Pacific"),
+        rate=100,
+        base_url="http://shadowreader.example.com",
+        identifier="qa",
+        loop_duration=60,
+        baseline=0,
+    )
+    assert app1 == app2 and len(apps) == 3
+    assert app2.replay_start_time == app1.replay_start_time
