@@ -253,10 +253,12 @@ class MyTime:
             "%Y-%m-%dT%H:%M:%S",
             "%Y-%m-%dT%H:%M:%S.%f",
             "%Y-%m-%dT%H:%M:%S.%fZ",
+            "%Y-%m-%dT%H:%M:%S.%f%Z",
+            "%Y-%m-%dT%H:%M:%S.%f%z",
         ]
-        for myformat in formats:
+        for f in formats:
             try:
-                replay_start_time = datetime.strptime(formatted_time, myformat)
+                replay_start_time = datetime.strptime(formatted_time, f)
                 kwargs = {
                     "year": replay_start_time.year,
                     "month": replay_start_time.month,
@@ -275,7 +277,9 @@ class MyTime:
         """ Strip timezone from ISO format string
             Ex: '2018-08-03T08:30:00.000+10:00' => '2018-08-03T08:30:00.000'
         """
-        pattern = r"[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}.[\d]+(\+|-)[\d]{2}:[\d]{2}"
+        pattern = (
+            r"[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}.[\d]+(\+|-)[\d]{2}:[\d]{2}"
+        )
         match = re.match(pattern, formatted_time)
         if match:
             return formatted_time[:-6]
@@ -286,4 +290,5 @@ class MyTime:
         """ Format as string in format expected in the severless.yml test parameters.
         Example formatting: 2018-6-19-0-0
         """
-        return self.dt.strftime('%Y-%m-%d-%H-%M')
+        return self.dt.strftime("%Y-%m-%d-%H-%M")
+
