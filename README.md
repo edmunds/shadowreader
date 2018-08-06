@@ -50,7 +50,7 @@ orchestrator-past:
     test_params: '{
                     "base_url": "http://www.mywebsite.com",
                     "rate": 100,
-                    "replay_start_time": "2018-4-2-15-40",
+                    "replay_start_time": "2018-08-06T13:30",
                     "loop_duration": 60,
                     "identifier": "oss"
                 }'
@@ -66,8 +66,9 @@ orchestrator-past:
   #                       no requests will be sent in the load test.
   # "loop_duration" - This is an integer value, denominated in minutes.
   #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
-  #                   For example, if "replay_start_time" = "2018-1-1-10-0" and "loop_duration" = 60,
-  #                   then it will replay traffic from 2018-1-1-10-0 to 2018-1-1-11-0
+  #                   For example, if "replay_start_time" = "2018-08-06T13:30" and "loop_duration" = 60,
+  #                   then it will replay traffic from 2018-08-06T13:30 to 2018-08-06T14:30
+  #                   (ie. replay traffic from 2018-08-06 1:30PM to 2:30PM)
   # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
   # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
 ```
