@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from datetime import datetime, timedelta
@@ -290,9 +291,7 @@ class MyTime:
         """ Strip timezone from ISO format string
             Ex: '2018-08-03T08:30:00.000+10:00' => '2018-08-03T08:30:00.000'
         """
-        pattern = (
-            r"[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}.[\d]+(\+|-)[\d]{2}:[\d]{2}"
-        )
+        pattern = r"[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}.[\d]+(\+|-)[\d]{2}:[\d]{2}"
         match = re.match(pattern, formatted_time)
         if match:
             return formatted_time[:-6]

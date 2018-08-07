@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from libs import delay, master
@@ -21,7 +22,8 @@ def test_calculate_delay_per_req():
     total_expected_execution_time = 60
 
     delay_per_req = delay.calculate_delay_per_req(
-        num_total_requests, total_expected_execution_time)
+        num_total_requests, total_expected_execution_time
+    )
     assert delay_per_req == 0.027
 
 
@@ -35,12 +37,13 @@ def test_calculate_total_expected_excecution_time():
 
 def test_calculate_delay_between_slaves():
     load = [1] * 1234
-    load_chunks, load_size = master._generate_chunked_load(
-        load=load, chunk_max=100)
+    load_chunks, load_size = master._generate_chunked_load(load=load, chunk_max=100)
     delay_per_req = delay.calculate_delay_per_req(
-        num_total_requests=len(load), total_expected_execution_time=65)
+        num_total_requests=len(load), total_expected_execution_time=65
+    )
     delays = delay.calculate_delays_between_slaves(load_chunks, delay_per_req)
     from pprint import pprint
+
     pprint(load_chunks)
     pprint(delays)
 
@@ -50,10 +53,10 @@ def test_calculate_delay_between_slaves():
 
 def test_calculate_delay_between_slaves_random():
     load = [1] * 1234
-    load_chunks, load_size = master._generate_chunked_load(
-        load=load, chunk_max=100)
+    load_chunks, load_size = master._generate_chunked_load(load=load, chunk_max=100)
     delay_per_req = delay.calculate_delay_per_req(
-        num_total_requests=len(load), total_expected_execution_time=65)
+        num_total_requests=len(load), total_expected_execution_time=65
+    )
     delays = delay.calculate_delays_between_slaves(load_chunks, delay_per_req)
     delays_rand = delay.make_delays_random(delays)
 

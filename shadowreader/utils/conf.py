@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 from os import path, getenv
 import yaml
@@ -84,9 +85,7 @@ class Plugins:
         important_env_vars = ["region", "stage"]
         for env_var, val in env_vars.items():
             if env_var in important_env_vars and not val:
-                msg = (
-                    f"Invalid Lambda environment variable detected. env_var: {env_var}, env var val: {val}"
-                )
+                msg = f"Invalid Lambda environment variable detected. env_var: {env_var}, env var val: {val}"
                 raise InvalidLambdaEnvVarError(msg)
         return env_vars
 

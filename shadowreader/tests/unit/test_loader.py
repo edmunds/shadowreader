@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from libs import loader
@@ -27,7 +28,8 @@ def test_loader():
 
 def test_calculate_target_load():
     target_num_reqs = loader._calculate_target_load(
-        num_reqs=1234, rate=52.5, baseline=0)
+        num_reqs=1234, rate=52.5, baseline=0
+    )
 
     assert target_num_reqs == 648
 
@@ -35,8 +37,7 @@ def test_calculate_target_load():
 def test_calculate_target_load_w_baseline():
     min_load = 2000
     target_num_reqs = loader._calculate_target_load(
-        num_reqs=1234, rate=52.5, baseline=min_load)
+        num_reqs=1234, rate=52.5, baseline=min_load
+    )
 
     assert target_num_reqs == 1050
-
-

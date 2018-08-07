@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 import traceback
@@ -32,7 +33,7 @@ def lambda_handler(event, context):
     try:
         """
         First gather the necessary test params, init App objects, filters and compute the current step
-        After, 
+        After,
         then send (app, env_to_test, cur_timestamp, rate) to consumer-master
         consumer-master will then fetch data set (set of URLs) from S3, then pass it to multiple consumer-slaves
         each consumer-slave will then send out requests to test environment (each slave handles up to 100 requests)

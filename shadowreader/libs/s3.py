@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 import os
 import boto3
@@ -31,7 +32,7 @@ def put_on_s3(
 ) -> str:
     key = _generate_s3_key(mytime, app_name)
     if put_file:
-        resp = _put_on_s3(data, key=key, bucket=bucket)
+        _put_on_s3(data, key=key, bucket=bucket)
     return key
 
 

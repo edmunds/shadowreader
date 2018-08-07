@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from classes.app import App
@@ -60,7 +61,7 @@ class Headers:
         return base_user_agent
 
     def _generate_user_agent_for_past_sr_type(self) -> str:
-        """ 
+        """
         Append to the base user agent info about the currently running test.
         Ex user-agent: _myapp_
         """
@@ -68,9 +69,7 @@ class Headers:
 
         replay_start_time = self._format_app_time_to_str()
 
-        user_agent_suffix = (
-            f"_{self.app.name}_{replay_start_time}_{self.app.loop_duration}m_{loop_iteration}"
-        )
+        user_agent_suffix = f"_{self.app.name}_{replay_start_time}_{self.app.loop_duration}m_{loop_iteration}"
 
         return user_agent_suffix
 

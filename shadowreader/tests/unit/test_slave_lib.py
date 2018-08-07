@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from libs import slave
@@ -19,7 +20,13 @@ from requests_futures.sessions import FuturesSession
 
 
 def test_send_requests_slave(monkeypatch):
-    load = [{"url": "http://shadowreader.example.com", "req_method": "POST", "request_uri": '/test'}]
+    load = [
+        {
+            "url": "http://shadowreader.example.com",
+            "req_method": "POST",
+            "request_uri": "/test",
+        }
+    ]
     headers = {"User-Agent": "sr_pytest"}
 
     fut = FuturesSession().get("http://www.example.com")

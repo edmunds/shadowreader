@@ -11,6 +11,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from os import getenv
@@ -61,9 +62,7 @@ def init_env_vars_apis():
 
     for env_var, val in env_vars.items():
         if not val:
-            msg = (
-                f"Invalid Lambda environment variable detected. env_var: {env_var}, env_var val: {val}"
-            )
+            msg = f"Invalid Lambda environment variable detected. env_var: {env_var}, env_var val: {val}"
             raise ValueError(msg)
 
     return env_vars

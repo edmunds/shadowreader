@@ -11,9 +11,9 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
-import gzip
 import re
 import boto3
 
@@ -28,9 +28,7 @@ from datetime import datetime
 from typing import Tuple, Match
 
 s3cl = boto3.client("s3")
-elb_regex = (
-    '(?P<timestamp>[\S]+) (?P<elb>[\S]+) (?P<client>[\S]+):(?P<client_port>[\S]+) (?P<target>[\S]+):(?P<target_port>[\S]+) (?P<request_processing_time>[\S]+) (?P<target_processing_time>[\S]+) (?P<response_processing_time>[\S]+) (?P<elb_status_code>[\S]+) (?P<target_status_code>[\S]+) (?P<received_bytes>[\S]+) (?P<sent_bytes>[\S]+) (?P<request>".*") (?P<user_agent>".*") (?P<ssl_cipher>[\S]+) (?P<ssl_protocol>[\S]+)'
-)
+elb_regex = '(?P<timestamp>[\S]+) (?P<elb>[\S]+) (?P<client>[\S]+):(?P<client_port>[\S]+) (?P<target>[\S]+):(?P<target_port>[\S]+) (?P<request_processing_time>[\S]+) (?P<target_processing_time>[\S]+) (?P<response_processing_time>[\S]+) (?P<elb_status_code>[\S]+) (?P<target_status_code>[\S]+) (?P<received_bytes>[\S]+) (?P<sent_bytes>[\S]+) (?P<request>".*") (?P<user_agent>".*") (?P<ssl_cipher>[\S]+) (?P<ssl_protocol>[\S]+)'
 regex = re.compile(elb_regex)
 
 
@@ -80,7 +78,7 @@ def _batch_lines_by_timestamp(lines: list, payload: dict, app: str) -> dict:
         mytime = MyTime.from_epoch(epoch=epoch, tzinfo="UTC").set_seconds_to_zero()
         mytime = mytime.epoch
 
-        if not mytime in payload[app]:
+        if mytime not in payload[app]:
             payload[app][mytime] = []
 
         payload[app][mytime].append(line)
