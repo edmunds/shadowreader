@@ -18,10 +18,10 @@ In the chart above, the blue line is the request rate of ShadowReader while in o
 
 ShadowReader mimics real user traffic by replaying URLs from production at the same rate as the live website. Being serverless, it is more efficient cost and performance wise than traditional distributed load tests and in practice has scaled beyond 50,000 requests / minute.
 
-Support for replaying logs from two types of load balancers:
+Support for replaying logs from these load balancers:
 
-- Application Load Balancer
-- Classic Load Balancer
+- [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
+- [Classic Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html)
 - (Support for other types of load balancers planned)
 
 # Quick start
