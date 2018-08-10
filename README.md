@@ -1,10 +1,9 @@
 # ShadowReader
 
-<p align="center">
-  <a href="https://travis-ci.com/edmunds/shadowreader"><img alt="Build Status" src="https://travis-ci.com/edmunds/shadowreader.svg?branch=master"></a>
-  <a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
-  <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-</p>
+<a href="https://travis-ci.com/edmunds/shadowreader"><img alt="Build Status" src="https://travis-ci.com/edmunds/shadowreader.svg?branch=master"></a>
+<a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
+<a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+
 <p align="center">
   <img src="https://ysawa0.github.io/sr-assets/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
@@ -27,12 +26,17 @@ Support for replaying logs from two types of load balancers:
 
 # Quick start
 
+```
+git clone https://github.com/edmunds/shadowreader.git
+cd shadowreader/shadowreader
+```
+
 ## 1. serverless.yml set up
 
-Copy contents of `shadowreader/serverless.example.yml` to `shadowreader/serverless.yml`.
+Copy contents of `serverless.example.yml` to `serverless.yml`.
 
 ```
-cp shadowreader/serverless.example.yml shadowreader/serverless.yml
+cp serverless.example.yml serverless.yml
 ```
 
 Then update the variables listed below.
@@ -94,10 +98,10 @@ vpc:
 
 ## 2. shadowreader.yml set up
 
-Copy contents of `shadowreader/shadowreader.example.yml` to `shadowreader/shadowreader.yml`
+Copy contents of `shadowreader.example.yml` to `shadowreader.yml`
 
 ```
-cp shadowreader/serverless.example.yml shadowreader/serverless.yml
+cp serverless.example.yml serverless.yml
 ```
 
 ShadowReader must read/parse your access logs stored on S3 before it can replay it during a load test.
@@ -111,19 +115,6 @@ Once this value is set and SR is deployed to your AWS account, it will start ing
 # See screenshots below for help in finding this.
 environment:
     access_logs_bucket: AWSLogs/123456789/elasticloadbalancing
-```
-
-The `producer` section controls the type of load balancer logs to parse.
-
-If you want to parse Application Load Balancer logs, enter "alb"
-
-If you want to parse Classic Load Balancer logs, enter "elb"
-
-```
-# Required
-# Default is alb
-plugins:
-  producer: alb
 ```
 
 ### Enabling ELB logs
@@ -148,15 +139,27 @@ Click on your ELB in the AWS console then scroll to the `attributes` section
   <img src="https://ysawa0.github.io/sr-assets/elb-how-3.png" alt="elb-how-to-3" width="75%" height="75%"/>
 </p>
 
+### The `producer` section controls the type of load balancer logs to parse.
+
+If you want to parse Application Load Balancer logs, enter "alb"
+
+If you want to parse Classic Load Balancer logs, enter "elb"
+
+```
+# Required
+# Default is alb
+plugins:
+  producer: alb
+```
+
 ## 3. Install the Serverless framework
+
+Guide for installing Serverless framework:
+https://serverless.com/framework/docs/getting-started/
 
 ```sh
 # Install the serverless cli
 npm install -g serverless
-
-# In-depth guide for installing Serverless framework:
-# https://serverless.com/framework/docs/getting-started/
-
 # Install the Serverless plugin which will pack necessary Python libraries
 serverless plugin install -n serverless-python-requirements
 ```
