@@ -31,93 +31,43 @@ git clone https://github.com/edmunds/shadowreader.git
 cd shadowreader/shadowreader
 ```
 
-## 1. serverless.yml set up
+## 1. Deploy ShadowReader and collect access logs
 
-Copy contents of `serverless.example.yml` to `serverless.yml`.
+Copy `serverless.example.yml` to `serverless.yml`.
 
 ```
 cp serverless.example.yml serverless.yml
 ```
 
-Then update the variables listed below.
+(Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via the [Serverless framework](https://serverless.com/).)
 
-Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via the [Serverless framework](https://serverless.com/).
+Update `my_project_name` in `serverless.yml`. This is your project name.
+It is to ensure that the S3 bucket used by ShadowReader has unique naming (S3 bucket names must be globally unique).
 
 ```
-# Required. This is your project name. It is to ensure that the S3 bucket used by ShadowReader has unique naming.
 custom:
   my_project_name: my-unique-project-name
 ```
 
-```
-# Required.
-# "test_params" variable is a JSON that specifies the parameters for the load test.
-# All values except "identifier" must be properly configured.
-# Values below are examples
-
-orchestrator-past:
-  handler: functions/orchestrator_past.lambda_handler
-  events:
-    - schedule: rate(1 minute)
-  environment:
-    test_params: '{
-                    "base_url": "http://www.mywebsite.com",
-                    "rate": 100,
-                    "replay_start_time": "2018-08-06T13:30",
-                    "loop_duration": 60,
-                    "identifier": "oss"
-                }'
-    timezone: US/Pacific
-
-  # "base_url" - Here, you can specify the base URL which will prefix the URIs collected from ELB logs.
-  #              It should not end with a "/"
-  # "rate" - A percentage value at which ShadowReader will perform the load test.
-  #          It accepts a float value larger than 0
-  # "replay_start_time" - ShadowReader replays traffic from certain time periods for its load tests.
-  #                       This is the starting time for the replay period.
-  #                       If ShadowReader has not collected data for this time period,
-  #                       no requests will be sent in the load test.
-  # "loop_duration" - This is an integer value, denominated in minutes.
-  #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
-  #                   For example, if "replay_start_time" = "2018-08-06T13:30" and "loop_duration" = 60,
-  #                   then it will replay traffic from 2018-08-06T13:30 to 2018-08-06T14:30
-  #                   (ie. replay traffic from 2018-08-06 1:30PM to 2:30PM)
-  # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
-  # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
-```
-
-```
-# Optional. If you are testing inside a VPC, these must be set to give ShadowReader VPC access.
-vpc:
-  securityGroupIds:
-    - sg-your-security-group-id
-  subnetIds:
-    - subnet-your-subnet-1
-    - subnet-your-subnet-2
-```
-
-## 2. shadowreader.yml set up
-
-Copy contents of `shadowreader.example.yml` to `shadowreader.yml`
+Copy `shadowreader.example.yml` to `shadowreader.yml`
 
 ```
 cp serverless.example.yml serverless.yml
 ```
 
-ShadowReader must read/parse your access logs stored on S3 before it can replay it during a load test.
+ShadowReader must read/parse your access logs stored on S3 before it can replay it for a load test.
 
-The `access_logs_bucket` variable must point to the S3 bucket/path with your ELB logs.
+`access_logs_bucket` in `serverless.yml` must point to the S3 bucket and path with your ELB logs.
 
-Once this value is set and SR is deployed to your AWS account, it will start ingesting the logs in real-time.
+Once SR is deployed to your AWS account, it will start ingesting the logs in this bucket in real-time.
 
 ```
-# Required. This variable must be set according to where your ELB logs are being written to.
 # See screenshots below for help in finding this.
 environment:
     access_logs_bucket: AWSLogs/123456789/elasticloadbalancing
 ```
 
-### Enabling ELB logs
+## Enabling ELB logs
 
 By enabling ELB logs, AWS will start writing your access logs to a S3 bucket in real-time.
 
@@ -141,9 +91,9 @@ Click on your ELB in the AWS console then scroll to the `attributes` section
 
 ### The `producer` section controls the type of load balancer logs to parse.
 
-If you want to parse Application Load Balancer logs, enter "alb"
+If you are parsing Application Load Balancer logs, enter "alb"
 
-If you want to parse Classic Load Balancer logs, enter "elb"
+If you are parsing Classic Load Balancer logs, enter "elb"
 
 ```
 # Required
@@ -196,9 +146,66 @@ echo '[install]\nprefix=' > setup.cfg
 
 More details here:
 
+https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
+
 https://github.com/UnitedIncome/serverless-python-requirements#applebeersnake-mac-brew-installed-python-notes
 
-https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
+## 5. Start a load test
+
+Once SR has parsed some incoming access logs, you can start a load test to replay the logs that were just collected.
+Open `serverless.yml` and edit these values:
+
+```
+# "test_params" variable is a JSON that specifies the parameters for the load test.
+# All values except "identifier" must be properly configured.
+# Values below are examples
+
+orchestrator-past:
+  handler: functions/orchestrator_past.lambda_handler
+  events:
+    - schedule: rate(1 minute)
+  environment:
+    test_params: '{
+                    "base_url": "http://www.mywebsite.com",
+                    "rate": 100,
+                    "replay_start_time": "2018-08-06T13:30",
+                    "loop_duration": 60,
+                    "identifier": "oss"
+                }'
+    timezone: US/Pacific
+
+  # "base_url" - Here, you can specify the base URL which will prefix the URIs collected from ELB logs.
+  #              It should not end with a "/"
+  # "rate" - A percentage value at which ShadowReader will perform the load test.
+  #          It accepts a float value larger than 0
+  # "replay_start_time" - ShadowReader replays traffic from certain time periods for its load tests.
+  #                       This is the starting time for the replay period.
+  #                       If ShadowReader has not collected data for this time period,
+  #                       no requests will be sent in the load test.
+  # "loop_duration" - This is an integer value, denominated in minutes.
+  #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
+  #                   For example, if "replay_start_time" = "2018-08-06T13:30" and "loop_duration" = 60,
+  #                   then it will replay access logs from 2018-08-06T13:30 to 2018-08-06T14:30
+  #                   (ie. replay traffic from 2018-08-06 1:30PM to 2:30PM)
+  # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
+  # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
+```
+
+```
+# Optional. If you are testing inside a VPC, these must be set to give ShadowReader VPC access.
+vpc:
+  securityGroupIds:
+    - sg-your-security-group-id
+  subnetIds:
+    - subnet-your-subnet-1
+    - subnet-your-subnet-2
+```
+
+Now redeploy ShadowReader with the new config to start the load test:
+
+```
+serverless deploy --stage dev --region region_of_your_choice
+```
 
 ## How it works
 
