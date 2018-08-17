@@ -52,7 +52,7 @@ custom:
 Copy `shadowreader.example.yml` to `shadowreader.yml`
 
 ```
-cp serverless.example.yml serverless.yml
+cp shadowreader.example.yml shadowreader.yml
 ```
 
 ShadowReader must read/parse your access logs stored on S3 before it can replay it for a load test.
