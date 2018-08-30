@@ -121,3 +121,92 @@ def test_init_apps_from_test_params_w_isoformat():
     )
     assert app1 == app2 and len(apps) == 3
     assert app2.replay_start_time == app1.replay_start_time
+
+
+def test_init_apps_from_test_params_w_replay_end_time():
+    defaults = {
+        "apps_to_test": ["test-app1", "test-app2", "test-app3"],
+        "test_params": {
+            "rate": 100,
+            "replay_start_time": "2018-08-29T10:30",
+            "replay_end_time": "2018-08-30T12:31",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
+        },
+        "overrides": [],
+        "timezone": "Japan",
+    }
+
+    apps, test_params = orchestrator.init_apps_from_test_params(defaults)
+    app1 = apps[0]
+    app2 = App(
+        name="test-app1",
+        replay_start_time=MyTime(
+            year=2018, month=8, day=29, hour=10, minute=30, tzinfo="Japan"
+        ),
+        rate=100,
+        base_url="http://shadowreader.example.com",
+        identifier="qa",
+        loop_duration=1561,
+        baseline=0,
+    )
+
+    print(app1)
+    print(app2)
+    assert app1 == app2
+    assert len(apps) == 3
+    assert app2.replay_start_time == app1.replay_start_time
+
+
+def test_replay_window_w_replay_duration_of_1():
+    defaults = {
+        "apps_to_test": ["test-app1"],
+        "test_params": {
+            "rate": 100,
+            "replay_start_time": "2018-08-30T00:00",
+            "replay_end_time": "2018-08-30T00:00",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
+        },
+        "overrides": [],
+        "timezone": "Japan",
+    }
+
+    apps, test_params = orchestrator.init_apps_from_test_params(defaults)
+    app1 = apps[0]
+    assert app1.loop_duration == 1
+
+    defaults = {
+        "apps_to_test": ["test-app1"],
+        "test_params": {
+            "rate": 100,
+            "replay_start_time": "2018-08-30T00:00",
+            "replay_end_time": "2018-08-30T00:01",
+            "base_url": "http://shadowreader.example.com",
+            "identifier": "qa",
+        },
+        "overrides": [],
+        "timezone": "Japan",
+    }
+
+    apps, test_params = orchestrator.init_apps_from_test_params(defaults)
+    app1 = apps[0]
+    assert app1.loop_duration == 1
+
+
+def test_determine_replay_time_window():
+    params = {
+        "rate": 100,
+        "replay_start_time": "2018-08-30T00:00",
+        "replay_end_time": "2018-08-30T00:11",
+        "base_url": "http://shadowreader.example.com",
+        "identifier": "qa",
+    }
+    replay_duration, replay_start_time = orchestrator.determine_replay_time_window(
+        params, tzinfo="US/Eastern"
+    )
+    assert replay_duration == 11
+
+
+if __name__ == "__main__":
+    test_determine_replay_time_window()
