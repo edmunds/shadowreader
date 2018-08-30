@@ -59,8 +59,8 @@ orchestrator-past:
     test_params: '{
                     "base_url": "http://www.mywebsite.com",
                     "rate": 100,
-                    "replay_start_time": "2018-08-06T13:30",
-                    "loop_duration": 60,
+                    "replay_start_time": "2018-08-06T01:00",
+                    "replay_end_time": "2018-08-06T02:00",
                     "identifier": "oss"
                 }'
     timezone: US/Pacific
@@ -69,15 +69,14 @@ orchestrator-past:
   #              It should not end with a "/"
   # "rate" - A percentage value at which ShadowReader will perform the load test.
   #          It accepts a float value larger than 0
-  # "replay_start_time" - ShadowReader replays traffic from certain time periods for its load tests.
+  # "replay_start_time" - ShadowReader replays traffic from a certain time window for its load tests.
   #                       This is the starting time for the replay period.
   #                       If ShadowReader has not collected data for this time period,
   #                       no requests will be sent in the load test.
-  # "loop_duration" - This is an integer value, denominated in minutes.
-  #                   It is how long the replay period will be, starting from the time specified in "replay_start_time"
-  #                   For example, if "replay_start_time" = "2018-08-06T13:30" and "loop_duration" = 60,
-  #                   then it will replay traffic from 2018-08-06T13:30 to 2018-08-06T14:30
-  #                   (ie. replay traffic from 2018-08-06 1:30PM to 2:30PM)
+  # "replay_end_time" - This is the end time for the replay time window.
+  #                     In the sample test_params above, the load test will replay traffic from
+  #                     2018-08-06 1AM to 2018-08-06 2AM
+  #                     The time windows are specified in ISO 8601 format.
   # "identifier" - This is an identifier that is used when tagging CloudWatch metrics. Editing it is optional.
   # "timezone" - Timezone the replay_start_time is in. Accepts pytz timezone names like "US/Pacific" or "UTC"
 ```
