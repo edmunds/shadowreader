@@ -17,3 +17,7 @@ limitations under the License.
 
 class InvalidLambdaEnvVarError(ValueError):
     pass
+
+
+class InvalidTestParametersError(ValueError):
+    pass
