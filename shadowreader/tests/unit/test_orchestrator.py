@@ -151,8 +151,6 @@ def test_init_apps_from_test_params_w_replay_end_time():
         baseline=0,
     )
 
-    print(app1)
-    print(app2)
     assert app1 == app2
     assert len(apps) == 3
     assert app2.replay_start_time == app1.replay_start_time
