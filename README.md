@@ -1,10 +1,9 @@
 # ShadowReader
 
-<p align="center">
-  <a href="https://travis-ci.com/edmunds/shadowreader"><img alt="Build Status" src="https://travis-ci.com/edmunds/shadowreader.svg?branch=master"></a>
-  <a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
-  <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-</p>
+<a href="https://travis-ci.com/edmunds/shadowreader"><img alt="Build Status" src="https://travis-ci.com/edmunds/shadowreader.svg?branch=master"></a>
+<a href="http://www.serverless.com"><img alt="Serverless" src="http://public.serverless.com/badges/v3.svg"></a>
+<a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+
 <p align="center">
   <img src="https://ysawa0.github.io/sr-assets/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
@@ -19,34 +18,144 @@ In the chart above, the blue line is the request rate of ShadowReader while in o
 
 ShadowReader mimics real user traffic by replaying URLs from production at the same rate as the live website. Being serverless, it is more efficient cost and performance wise than traditional distributed load tests and in practice has scaled beyond 50,000 requests / minute.
 
-Support for replaying logs from two types of load balancers:
+Support for replaying logs from these load balancers:
 
-- Application Load Balancer
-- Classic Load Balancer
+- [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
+- [Classic Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html)
 - (Support for other types of load balancers planned)
 
 # Quick start
 
-## 1. serverless.yml set up
-
-Copy contents of `shadowreader/serverless.example.yml` to `shadowreader/serverless.yml`.
-
 ```
-cp shadowreader/serverless.example.yml shadowreader/serverless.yml
+git clone https://github.com/edmunds/shadowreader.git
+cd shadowreader/shadowreader
 ```
 
-Then update the variables listed below.
+## 1. Deploy ShadowReader and collect access logs
 
-Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via the [Serverless framework](https://serverless.com/).
+Copy `serverless.example.yml` to `serverless.yml`.
 
 ```
-# Required. This is your project name. It is to ensure that the S3 bucket used by ShadowReader has unique naming.
+cp serverless.example.yml serverless.yml
+```
+
+(Both `serverless.yml` and `shadowreader.yml` must be configured before deployment via the [Serverless framework](https://serverless.com/).)
+
+Update `my_project_name` in `serverless.yml`. This is your project name.
+It is to ensure that the S3 bucket used by ShadowReader has unique naming (S3 bucket names must be globally unique).
+
+```
 custom:
   my_project_name: my-unique-project-name
 ```
 
+Copy `shadowreader.example.yml` to `shadowreader.yml`
+
 ```
-# Required.
+cp shadowreader.example.yml shadowreader.yml
+```
+
+ShadowReader must read/parse your access logs stored on S3 before it can replay it for a load test.
+
+`access_logs_bucket` in `serverless.yml` must point to the S3 bucket and path with your ELB logs.
+
+Once SR is deployed to your AWS account, it will start ingesting the logs in this bucket in real-time.
+
+```
+# See screenshots below for help in finding this.
+environment:
+    access_logs_bucket: AWSLogs/123456789/elasticloadbalancing
+```
+
+## Enabling ELB logs
+
+By enabling ELB logs, AWS will start writing your access logs to a S3 bucket in real-time.
+
+ShadowReader has the ability to read these logs and replay it once ingested.
+
+Click on your ELB in the AWS console then scroll to the `attributes` section
+
+<p align="center">
+  <img src="https://ysawa0.github.io/sr-assets/elb-how-1.png" alt="elb-how-to-1" width="75%" height="75%"/>
+</p>
+
+<p align="center">
+  <img src="https://ysawa0.github.io/sr-assets/elb-how-2.png" alt="elb-how-to-2" width="75%" height="75%"/>
+</p>
+
+### Finding your access_logs_bucket and path
+
+<p align="center">
+  <img src="https://ysawa0.github.io/sr-assets/elb-how-3.png" alt="elb-how-to-3" width="75%" height="75%"/>
+</p>
+
+### The `producer` section controls the type of load balancer logs to parse.
+
+If you are parsing Application Load Balancer logs, enter "alb"
+
+If you are parsing Classic Load Balancer logs, enter "elb"
+
+```
+# Required
+# Default is alb
+plugins:
+  producer: alb
+```
+
+## 3. Install the Serverless framework
+
+Guide for installing Serverless framework:
+https://serverless.com/framework/docs/getting-started/
+
+```sh
+# Install the serverless cli
+npm install -g serverless
+# Install the Serverless plugin which will pack necessary Python libraries
+serverless plugin install -n serverless-python-requirements
+```
+
+## 3.5 Set up virtual env
+
+```sh
+python3 -m venv ~/.virtualenvs/sr-env
+source ~/.virtualenvs/sr-env/bin/activate
+```
+
+## 4. Deploy to AWS
+
+```
+# Deploy ShadowReader to your AWS account
+serverless deploy --stage dev --region region_of_your_choice
+```
+
+You may run into this error:
+
+```
+File "/usr/local/Cellar/python/3.6.4_4/Frameworks/Python.framework/Versions/3.6/lib/python3.6/distutils/command/install.py", line 248, in finalize_options
+  "must supply either home or prefix/exec-prefix -- not both")
+distutils.errors.DistutilsOptionError: must supply either home or prefix/exec-prefix -- not both
+```
+
+This happens with Brew installed Python.
+Run this to fix it.
+
+```
+(while inside the shadowreader folder)
+echo '[install]\nprefix=' > setup.cfg
+```
+
+More details here:
+
+https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
+
+https://github.com/UnitedIncome/serverless-python-requirements#applebeersnake-mac-brew-installed-python-notes
+
+## 5. Start a load test
+
+Once SR has parsed some incoming access logs, you can start a load test to replay the logs that were just collected.
+Open `serverless.yml` and edit these values:
+
+```
 # "test_params" variable is a JSON that specifies the parameters for the load test.
 # All values except "identifier" must be properly configured.
 # Values below are examples
@@ -91,110 +200,11 @@ vpc:
     - subnet-your-subnet-2
 ```
 
-## 2. shadowreader.yml set up
-
-Copy contents of `shadowreader/shadowreader.example.yml` to `shadowreader/shadowreader.yml`
+Now redeploy ShadowReader with the new config to start the load test:
 
 ```
-cp shadowreader/serverless.example.yml shadowreader/serverless.yml
-```
-
-ShadowReader must read/parse your access logs stored on S3 before it can replay it during a load test.
-
-The `access_logs_bucket` variable must point to the S3 bucket/path with your ELB logs.
-
-Once this value is set and SR is deployed to your AWS account, it will start ingesting the logs in real-time.
-
-```
-# Required. This variable must be set according to where your ELB logs are being written to.
-# See screenshots below for help in finding this.
-environment:
-    access_logs_bucket: AWSLogs/123456789/elasticloadbalancing
-```
-
-The `producer` section controls the type of load balancer logs to parse.
-
-If you want to parse Application Load Balancer logs, enter "alb"
-
-If you want to parse Classic Load Balancer logs, enter "elb"
-
-```
-# Required
-# Default is alb
-plugins:
-  producer: alb
-```
-
-### Enabling ELB logs
-
-By enabling ELB logs, AWS will start writing your access logs to a S3 bucket in real-time.
-
-ShadowReader has the ability to read these logs and replay it once ingested.
-
-Click on your ELB in the AWS console then scroll to the `attributes` section
-
-<p align="center">
-  <img src="https://ysawa0.github.io/sr-assets/elb-how-1.png" alt="elb-how-to-1" width="75%" height="75%"/>
-</p>
-
-<p align="center">
-  <img src="https://ysawa0.github.io/sr-assets/elb-how-2.png" alt="elb-how-to-2" width="75%" height="75%"/>
-</p>
-
-### Finding your access_logs_bucket and path
-
-<p align="center">
-  <img src="https://ysawa0.github.io/sr-assets/elb-how-3.png" alt="elb-how-to-3" width="75%" height="75%"/>
-</p>
-
-## 3. Install the Serverless framework
-
-```sh
-# Install the serverless cli
-npm install -g serverless
-
-# In-depth guide for installing Serverless framework:
-# https://serverless.com/framework/docs/getting-started/
-
-# Install the Serverless plugin which will pack necessary Python libraries
-serverless plugin install -n serverless-python-requirements
-```
-
-## 3.5 Set up virtual env
-
-```sh
-python3 -m venv ~/.virtualenvs/sr-env
-source ~/.virtualenvs/sr-env/bin/activate
-```
-
-## 4. Deploy to AWS
-
-```
-# Deploy ShadowReader to your AWS account
 serverless deploy --stage dev --region region_of_your_choice
 ```
-
-You may run into this error:
-
-```
-File "/usr/local/Cellar/python/3.6.4_4/Frameworks/Python.framework/Versions/3.6/lib/python3.6/distutils/command/install.py", line 248, in finalize_options
-  "must supply either home or prefix/exec-prefix -- not both")
-distutils.errors.DistutilsOptionError: must supply either home or prefix/exec-prefix -- not both
-```
-
-This happens with Brew installed Python.
-Run this to fix it.
-
-```
-(while inside the shadowreader folder)
-echo '[install]\nprefix=' > setup.cfg
-```
-
-More details here:
-
-https://github.com/UnitedIncome/serverless-python-requirements#applebeersnake-mac-brew-installed-python-notes
-
-https://stackoverflow.com/questions/24257803/distutilsoptionerror-must-supply-either-home-or-prefix-exec-prefix-not-both
 
 ## How it works
 
