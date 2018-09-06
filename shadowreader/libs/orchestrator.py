@@ -26,6 +26,7 @@ from classes.app import App
 from classes.mytime import MyTime
 from libs.validate import validate_test_params, validate_timezone
 from utils.conf import sr_plugins, env_vars
+from classes.exceptions import InvalidTestParametersError
 
 
 def init_apps_from_test_params(event: dict = None) -> Tuple[list, dict]:
@@ -113,26 +114,43 @@ def _init_app_obj_from_params(app_name: str, params: dict, tzinfo: timezone) -> 
     else:
         baseline = 0
 
-    loop_duration = params["loop_duration"]
-
-    replay_start_time = params["replay_start_time"]
-    replay_start_time = MyTime.set_to_replay_start_time_env_var(
-        replay_start_time, tzinfo=tzinfo
-    )
-
     base_url = params["base_url"]
 
     identifier = params["identifier"] if "identifier" in params else ""
 
+    replay_duration, replay_start_time = determine_replay_time_window(params, tzinfo)
+
     return App(
         name=app_name,
         replay_start_time=replay_start_time,
-        loop_duration=loop_duration,
+        loop_duration=replay_duration,
         base_url=base_url,
         rate=rate,
         baseline=baseline,
         identifier=identifier,
     )
+
+
+def determine_replay_time_window(params: dict, tzinfo: str) -> Tuple[int, MyTime]:
+    replay_start_time = params["replay_start_time"]
+    replay_start_time = MyTime.set_to_replay_start_time_env_var(
+        replay_start_time, tzinfo
+    )
+    if "loop_duration" in params:
+        replay_duration = params["loop_duration"]
+
+    elif "replay_end_time" in params:
+        replay_end_time = MyTime.set_to_replay_start_time_env_var(
+            params["replay_end_time"], tzinfo
+        )
+        time_diff = replay_end_time.dt - replay_start_time.dt
+        replay_duration = int(time_diff.total_seconds() // 60)
+    else:
+        raise InvalidTestParametersError(
+            "Must set either loop_duration or replay_end_time in test_params"
+        )
+
+    return replay_duration, replay_start_time
 
 
 def _init_overrides(overrides: dict, tzinfo: timezone) -> dict:
