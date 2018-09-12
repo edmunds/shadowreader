@@ -29,7 +29,7 @@ from datetime import datetime
 from typing import Tuple, Match
 
 s3cl = boto3.client("s3")
-elb_regex = "(?P<type>[\S]+) (?P<timestamp>[\S]+) (?P<elb>[\S]+) " "(?P<client>[\S]+):(?P<client_port>[\S]+) (" "?P<target>[\S]+):(?P<target_port>[\S]+) " "(?P<request_processing_time>[\S]+) (" "?P<target_processing_time>[\S]+) " "(?P<response_processing_time>[\S]+) (?P<elb_status_code>[\S]+) (" "?P<target_status_code>[\S]+) " "(?P<received_bytes>[\S]+) " '(?P<sent_bytes>[\S]+) (?P<request>".*") (' '?P<user_agent>".*") (?P<ssl_cipher>[\S]+) ' "(?P<ssl_protocol>[\S]+) (?P<target_group_arn>[\S]+) (" "?P<trace_id>[\S]+) (?P<domain_name>[\S]+) " "(?P<chosen_cert_arn>[\S]+)"
+elb_regex = r'(?P<type>[\S]+) (?P<timestamp>[\S]+) (?P<elb>[\S]+) (?P<client>[\S]+) (?P<target>[\S]+) (?P<request_processing_time>[\S]+) (?P<target_processing_time>[\S]+) (?P<response_processing_time>[\S]+) (?P<elb_status_code>[\S]+) (?P<target_status_code>[\S]+) (?P<received_bytes>[\S]+) (?P<sent_bytes>[\S]+) \"(?P<request>.*)\" \"(?P<user_agent>.*)\" (?P<ssl_cipher>[\S]+) (?P<ssl_protocol>[\S]+) (?P<target_group_arn>[\S]+) \"(?P<trace_id>[\S]+)\" \"(?P<domain_name>[\S]+)\" \"(?P<chosen_cert_arn>[\S]+)\"'
 regex = re.compile(elb_regex)
 
 
@@ -57,7 +57,6 @@ def _download_file(bucket: str, key: str) -> str:
 def _parse_line(line: Match[str]) -> dict:
     """ Parse the a line in the ELB logs for various attributes"""
     request = line.group("request")
-    request = request[1:-1]
     request = request.split()
     req_method = request[0]  # GET, POST, PUT, etc.
     url = request[1]
@@ -113,7 +112,7 @@ def _download_and_parse_s3_data(files: list, elb_logs_bucket: str, app: str) -> 
         data = _download_file(elb_logs_bucket, f["Key"])
         delete_tmp_file()
         lines += data.splitlines()
-
+    
     lines = [regex.match(line) for line in lines]
     lines = sorted(lines, key=lambda x: x.group("timestamp"))
 
