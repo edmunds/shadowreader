@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 import traceback
 
 from classes.headers import Headers
@@ -113,5 +114,5 @@ def lambda_handler(event, context):
     except Exception as e:
         trace = traceback.format_exc()
         raise Exception(trace)
-
-    return cur_params, consumer_event
+    
+    return json.dumps(cur_params, default=str), json.dumps(consumer_event, default=str)

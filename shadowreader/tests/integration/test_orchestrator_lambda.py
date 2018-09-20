@@ -19,6 +19,7 @@ from pytz import timezone
 from classes.mytime import MyTime
 from functions import orchestrator_past
 
+import json
 
 def test_orchestrator_lambda_handler(monkeypatch):
     defaults = {
@@ -46,6 +47,8 @@ def test_orchestrator_lambda_handler(monkeypatch):
         monkeypatch.setattr("utils.conf.sr_plugins.exists", lambda x: False)
 
     cur_params, consumer_event = orchestrator_past.lambda_handler(defaults, {})
+    cur_params = json.loads(cur_params)
+    consumer_event = json.loads(consumer_event)
     timestamp = consumer_event["cur_timestamp"]
 
     mytime = MyTime.set_to_replay_start_time_env_var(
