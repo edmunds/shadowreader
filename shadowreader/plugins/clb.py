@@ -24,11 +24,11 @@ from libs.s3 import (
     fetch_file_names_on_s3,
 )
 from classes.mytime import MyTime
-from datetime import datetime
 from typing import Tuple, Match
+from collections import defaultdict
 
 s3cl = boto3.client("s3")
-elb_regex = '(?P<timestamp>[\S]+) (?P<elb>[\S]+) (?P<client>[\S]+):(?P<client_port>[\S]+) (?P<target>[\S]+):(?P<target_port>[\S]+) (?P<request_processing_time>[\S]+) (?P<target_processing_time>[\S]+) (?P<response_processing_time>[\S]+) (?P<elb_status_code>[\S]+) (?P<target_status_code>[\S]+) (?P<received_bytes>[\S]+) (?P<sent_bytes>[\S]+) (?P<request>".*") (?P<user_agent>".*") (?P<ssl_cipher>[\S]+) (?P<ssl_protocol>[\S]+)'
+elb_regex = r'(?P<timestamp>[\S]+) (?P<elb>[\S]+) (?P<client>[\S]+):(?P<client_port>[\S]+) (?P<target>[\S]+):(?P<target_port>[\S]+) (?P<request_processing_time>[\S]+) (?P<target_processing_time>[\S]+) (?P<response_processing_time>[\S]+) (?P<elb_status_code>[\S]+) (?P<target_status_code>[\S]+) (?P<received_bytes>[\S]+) (?P<sent_bytes>[\S]+) (?P<request>".*") "(?P<user_agent>.*)" (?P<ssl_cipher>[\S]+) (?P<ssl_protocol>[\S]+)'
 regex = re.compile(elb_regex)
 
 
@@ -64,11 +64,15 @@ def _parse_line(line: Match[str]) -> dict:
     uri = f'/{"/".join(x)}'
 
     timestamp = line.group("timestamp")  # timestamp in ISO format
-    timestamp = datetime.strptime(
-        timestamp[:19], "%Y-%m-%dT%H:%M:%S"
-    )  # convert to datetime obj
+    timestamp = MyTime._try_isoformat(timestamp, tzinfo="UTC").dt
 
-    res = {"url": url, "uri": uri, "req_method": req_method, "timestamp": timestamp}
+    res = {
+        "url": url,
+        "uri": uri,
+        "req_method": req_method,
+        "timestamp": timestamp,
+        "user_agent": line.group("user_agent"),
+    }
     return res
 
 
@@ -77,9 +81,6 @@ def _batch_lines_by_timestamp(lines: list, payload: dict, app: str) -> dict:
         epoch = line["timestamp"].timestamp()
         mytime = MyTime.from_epoch(epoch=epoch, tzinfo="UTC").set_seconds_to_zero()
         mytime = mytime.epoch
-
-        if mytime not in payload[app]:
-            payload[app][mytime] = []
 
         payload[app][mytime].append(line)
     return payload
@@ -113,12 +114,9 @@ def _download_and_parse_s3_data(files: list, elb_logs_bucket: str, app: str) -> 
         delete_tmp_file()
         lines += data.splitlines()
 
-    lines = [regex.match(line) for line in lines]
-    lines = sorted(lines, key=lambda x: x.group("timestamp"))
+    lines = _regex_match_and_parse_logs(lines)
 
-    lines = [_parse_line(line) for line in lines]
-
-    payload = {app: {}}
+    payload = {app: defaultdict(list)}
 
     payload = _batch_lines_by_timestamp(lines, payload, app)
 
@@ -128,6 +126,13 @@ def _download_and_parse_s3_data(files: list, elb_logs_bucket: str, app: str) -> 
 
     print(f"# lines produced: {num_lines}")
     return payload
+
+
+def _regex_match_and_parse_logs(lines):
+    lines = [regex.match(line) for line in lines]
+    lines = sorted(lines, key=lambda x: x.group("timestamp"))
+    lines = [_parse_line(line) for line in lines]
+    return lines
 
 
 def _deduce_bucket_n_path(bucket_w_logs: str) -> Tuple[str, str]:
