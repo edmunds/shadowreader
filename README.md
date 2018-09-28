@@ -11,7 +11,7 @@
 ShadowReader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
 
 <p align="center">
-  <img src="https://ysawa0.github.io/sr-assets/example1.png" alt="Example1" width="75%" height="75%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-architecture.png?raw=true" alt="shadow-reader-example1" width="75%" height="75%"/>
 </p>
 
 In the chart above, the blue line is the request rate of ShadowReader while in orange is the load on the production website.
