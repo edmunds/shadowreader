@@ -33,7 +33,7 @@ cp shadowreader.example.yml shadowreader.yml
 
 ShadowReader must read/parse your access logs stored on S3 before it can replay it for a load test.
 
-`access_logs_bucket` in `serverless.yml` must point to the S3 bucket and path with your ELB logs.
+`access_logs_bucket` in `shadowreader.yml` must point to the S3 bucket and path with your ELB logs.
 
 Once SR is deployed to your AWS account, it will start ingesting the logs in this bucket in real-time.
 
