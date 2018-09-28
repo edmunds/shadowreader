@@ -32,12 +32,12 @@ To get started, see the [walkthrough](docs/setup.md)
 
 [How we fixed a Node.js memory leak by using ShadowReader to replay production traffic into QA](http://technology.edmunds.com/2018/08/25/Investigating-a-Memory-Leak-and-Introducing-ShadowReader/)
 
-## How it works
+## Design
 
 This diagram details the AWS components Shadow Reader uses and how they interact. More details in the above case study.
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/docs/imgs/shadow-reader-architecture.png?raw=true" alt="how-it-works" width="90%" height="90%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-architecture.png?raw=true" alt="shadow-reader-design" width="90%" height="90%"/>
 </p>
 
 ## Contributing
