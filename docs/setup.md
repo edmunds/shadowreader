@@ -40,7 +40,7 @@ Once SR is deployed to your AWS account, it will start ingesting the logs in thi
 ```
 # See screenshots below for help in finding this.
 environment:
-    access_logs_bucket: AWSLogs/123456789/elasticloadbalancing
+    access_logs_bucket: myelb-logs-bucket/AWSLogs/123456789/elasticloadbalancing/us-east-1/
 ```
 
 ## Enabling ELB logs
