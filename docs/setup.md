@@ -2,6 +2,8 @@
 
 This document describes how to set up Shadow Reader for replaying past access logs.
 
+This doc assumes you have Python 3.6 installed.
+
 ```
 git clone https://github.com/edmunds/shadowreader.git
 cd shadowreader/shadowreader
