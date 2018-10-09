@@ -14,7 +14,7 @@ This demo will walk you through in setting up ShadowReader to parse those logs t
 ```
 Deploy the stack:
 curl https://raw.githubusercontent.com/edmunds/shadowreader/master/docs/demo-cf.yml --output demo-cf.yml
-aws cloudformation deploy --stack-name sr-demo  --template-file demo-cf.yaml --region us-east-1
+aws cloudformation deploy --stack-name sr-demo  --template-file demo-cf.yml --region us-east-1
 ```
 
 ## Set up shadowreader.yml
@@ -156,7 +156,7 @@ In about 6 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed 
 Check the CloudWatch `ELB 5XXs` count metrics for SR-Demo-ALB-receiving. It should be similar to the one for SR-Demo-ALB-log-generator.
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-live-replay-results.png?raw=true" alt="shadow-reader-demo-results" width="50%" height="50%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-live-replay-results.png?raw=true" alt="shadow-reader-demo-results" width="35%" height="35%"/>
 </p>
 
 ## Next steps
