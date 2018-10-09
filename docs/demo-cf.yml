@@ -1,0 +1,259 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Setup AWS Demo for Shadow Reader
+Parameters:
+  ShadowReaderVPCCIDR:
+    Description: CIDR Block for Developer VPC
+    Type: String
+    Default: 10.100.0.0/16
+  ShadowReaderPublicSubnet1CIDR:
+    Description: ShadowReaderEnv Public Subnet
+    Type: String
+    Default: 10.100.10.0/24
+    ConstraintDescription: IP CIDR must be in the range of your VPC
+  ShadowReaderPublicSubnet2CIDR:
+    Description: ShadowReaderEnv Private Subnet
+    Type: String
+    Default: 10.100.11.0/24
+    ConstraintDescription: IP CIDR must be in the range of your VPC
+
+Mappings:
+  ALBS3AccessAccountID:
+    us-east-1: 
+      Id: "127311923021"
+    us-east-2:
+      Id: "033677994240"
+    us-west-1:
+      Id: "027434742980"
+    us-west-2:
+      Id: "797873946194"
+    ca-central-1:
+      Id: "985666609251"
+    eu-central-1:
+      Id: "054676820928"
+    eu-west-1:
+      Id: "156460612806"
+    eu-west-2:
+      Id: "652711504416"
+    eu-west-3:
+      Id: "009996457667"
+    ap-northeast-1:
+      Id: "582318560864"
+    ap-northeast-2:
+      Id: "600734575887"
+    ap-northeast-3:
+      Id: "383597477331"
+    ap-southeast-1:
+      Id: "114774131450"
+    ap-southeast-2:
+      Id: "783225319266"
+    ap-south-1:
+      Id: "718504428378"
+    sa-east-1:
+      Id: "507241528517"
+    us-gov-west-1:
+      Id: "048591011584"
+    cn-north-1:
+      Id: "638102146993"
+    cn-northwest-1:
+      Id: "037604701340"
+
+Resources:
+  # Creates a single subnet VPC
+  ShadowReaderVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref "ShadowReaderVPCCIDR"
+      EnableDnsSupport: "true"
+      EnableDnsHostnames: "true"
+      Tags:
+        - Key: VPC
+          Value: ShadowReader VPC
+        - Key: Name
+          Value: ShadowReaderVPC
+  ShadowReaderInternetGateway:
+    Type: AWS::EC2::InternetGateway
+  ShadowReaderAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref "ShadowReaderVPC"
+      InternetGatewayId: !Ref "ShadowReaderInternetGateway"
+  ShadowReaderPublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref "ShadowReaderVPC"
+      CidrBlock: !Ref ShadowReaderPublicSubnet1CIDR
+      AvailabilityZone: !Select
+        - "0"
+        - !GetAZs ""
+      Tags:
+        - Key: Name
+          Value: !Sub ShadowReaderVPC.external.${AWS::Region}
+        - Key: immutable_metadata # If you cannot name the VPC as done above, use this tag
+          Value: !Sub |
+            {"purpose": "public-subnet"}
+  ShadowReaderPublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref "ShadowReaderVPC"
+      CidrBlock: !Ref ShadowReaderPublicSubnet2CIDR
+      AvailabilityZone: !Select
+        - "1"
+        - !GetAZs ""
+      Tags:
+        - Key: Name
+          Value: !Sub ShadowReaderVPC.external.${AWS::Region}b
+        - Key: immutable_metadata
+          Value: !Sub |
+            {"purpose": "public-subnet"}
+  ShadowReaderPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    DependsOn:
+      - ShadowReaderVPC
+      - ShadowReaderAttachGateway
+    Properties:
+      VpcId: !Ref "ShadowReaderVPC"
+      Tags:
+        - Key: Name
+          Value: ShadowReader Public Route Table
+  ShadowReaderPublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref "ShadowReaderPublicRouteTable"
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref "ShadowReaderInternetGateway"
+  ShadowReaderPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ShadowReaderPublicSubnet1
+      RouteTableId: !Ref "ShadowReaderPublicRouteTable"
+  ShadowReaderPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref ShadowReaderPublicSubnet2
+      RouteTableId: !Ref "ShadowReaderPublicRouteTable"
+
+  AccessLogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join [ '-', [ 'sr-access-logs', !Ref 'AWS::Region', !Ref 'AWS::AccountId'] ]
+  SampleBucketPolicy: 
+    Type: AWS::S3::BucketPolicy
+    DependsOn:
+      - AccessLogBucket
+    Properties: 
+      Bucket: !Ref AccessLogBucket
+      PolicyDocument: 
+        Statement: 
+          - 
+            Action: 
+              - "s3:PutObject"
+            Effect: "Allow"
+            Resource: 
+              Fn::Join: 
+                - ""
+                - 
+                  - "arn:aws:s3:::"
+                  - !Ref "AccessLogBucket"
+                  - "/*"
+            Principal: {"AWS": !FindInMap [ALBS3AccessAccountID, !Ref 'AWS::Region', Id]}
+
+                  
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref ShadowReaderVPC
+      SecurityGroupEgress:
+        - FromPort: "80"
+          ToPort: "80"
+          IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        - FromPort: "-1"
+          ToPort: "-1"
+          IpProtocol: icmp
+          CidrIp: 0.0.0.0/0
+        - FromPort: "80"
+          ToPort: "80"
+          IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      GroupDescription: ShadowReader-demo-sg
+
+  SRDemoALBReceiving:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn:
+      - SrDemoTargetGroupReceiving
+    Properties:
+      Name: SR-Demo-ALB-receiving
+      Scheme: internet-facing
+      Subnets: !Ref ShadowReaderPublicSubnet1
+      Subnets: [ !Ref ShadowReaderPublicSubnet1, !Ref ShadowReaderPublicSubnet2 ]
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Tags:
+        - Value: SR-Demo-ALB-receiving
+          Key: Name
+
+  SrDemoTargetGroupReceiving:
+      Type: AWS::ElasticLoadBalancingV2::TargetGroup
+      Properties:
+        HealthCheckPath: /
+        Name: SrDemoTargetGroupReceiving
+        VpcId: !Ref ShadowReaderVPC
+        HealthCheckProtocol: HTTP
+        Matcher: 
+          HttpCode: '200'
+        Protocol: HTTP
+        Port: 80
+
+  SRDemoALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+          - Type: forward
+            TargetGroupArn: !Ref SrDemoTargetGroupReceiving
+      Protocol: HTTP
+      Port: 80
+      LoadBalancerArn: !Ref SRDemoALBReceiving
+
+
+  SRDemoALBLogs:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn:
+      - SrDemoTargetGroupLogGenerator
+    Properties:
+      Name: SR-Demo-ALB-log-generator
+      Scheme: internet-facing
+      Subnets: !Ref ShadowReaderPublicSubnet1
+      Subnets: [ !Ref ShadowReaderPublicSubnet1, !Ref ShadowReaderPublicSubnet2 ]
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Tags:
+        - Value: SR-Demo-ALB-log-generator
+          Key: Name
+      LoadBalancerAttributes:
+      - Key: access_logs.s3.enabled
+        Value: true
+      - Key: access_logs.s3.bucket
+        Value: !Ref AccessLogBucket
+
+  SrDemoTargetGroupLogGenerator:
+      Type: AWS::ElasticLoadBalancingV2::TargetGroup
+      Properties:
+        HealthCheckPath: /
+        Name: SrDemoTargetGroupLogGenerator
+        VpcId: !Ref ShadowReaderVPC
+        HealthCheckProtocol: HTTP
+        Matcher: 
+          HttpCode: '200'
+        Protocol: HTTP
+        Port: 80
+
+  SRDemoALBListenerLogs:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+          - Type: forward
+            TargetGroupArn: !Ref SrDemoTargetGroupLogGenerator
+      Protocol: HTTP
+      Port: 80
+      LoadBalancerArn: !Ref SRDemoALBLogs
