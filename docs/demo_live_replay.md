@@ -156,7 +156,7 @@ In about 6 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed 
 Check the CloudWatch `ELB 5XXs` count metrics for SR-Demo-ALB-receiving. It should be similar to the one for SR-Demo-ALB-log-generator.
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-live-replay-results.png?raw=true" alt="shadow-reader-demo-results" width="100%" height="100%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-live-replay-results.png?raw=true" alt="shadow-reader-demo-results" width="50%" height="50%"/>
 </p>
 
 ## Next steps
