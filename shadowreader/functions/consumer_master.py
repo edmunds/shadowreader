@@ -57,14 +57,14 @@ def emit_metrics(
 
 def lambda_handler(event, context):
     """
-    Example event passed from orchestrator-past Lambda
+    Example event passed from orchestrator Lambda
         consumer_event = {
         'app': app.name,
         'env_to_test': app.env_to_test,
         'cur_timestamp': app.cur_timestamp,
         'rate': app.rate,
         'parent_lambda': lambda_name,
-        'child_lambda': consumer_master_past_lambda_name,
+        'child_lambda': consumer_master_lambda_name,
         'headers': headers,
     }
     """

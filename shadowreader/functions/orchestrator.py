@@ -42,7 +42,7 @@ def lambda_handler(event, context):
 
         mytime, lambda_name, env_vars = lambda_init.init_lambda(context)
         stage = env_vars["stage"]
-        consumer_master_past_lambda = env_vars["consumer_master_past_name"]
+        consumer_master_lambda = env_vars["consumer_master_name"]
 
         apps, test_params = init_apps_from_test_params(event)
         filters = init_filters()
@@ -69,11 +69,11 @@ def lambda_handler(event, context):
                 "rate": app.rate,
                 "baseline": app.baseline,
                 "parent_lambda": lambda_name,
-                "child_lambda": consumer_master_past_lambda,
+                "child_lambda": consumer_master_lambda,
                 "headers": headers,
                 "filters": filters,
             }
-            invoke_func(consumer_event, func=consumer_master_past_lambda)
+            invoke_func(consumer_event, func=consumer_master_lambda)
 
         if apps and consumer_event:
             print_to_logs(consumer_event, apps)

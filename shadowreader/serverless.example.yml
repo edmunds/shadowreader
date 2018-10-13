@@ -33,7 +33,7 @@ custom:
 
   parsed_data_bucket: ${self:custom.stack_name}-${self:custom.my_project_name}-parsed-data
 
-  consumer_master_past_name: ${self:custom.stack_name}-consumer-master-past
+  consumer_master_name: ${self:custom.stack_name}-consumer-master
   consumer_slave_name: ${self:custom.stack_name}-consumer-slave
 
 provider:
@@ -62,7 +62,7 @@ provider:
 
     parsed_data_bucket: ${self:custom.parsed_data_bucket}
 
-    consumer_master_past_name: ${self:custom.consumer_master_past_name}
+    consumer_master_name: ${self:custom.consumer_master_name}
     consumer_slave_name: ${self:custom.consumer_slave_name}
 
 # you can add packaging information here
@@ -76,8 +76,8 @@ package:
    - tests/**
 
 functions:
-  orchestrator-past:
-    handler: functions/orchestrator_past.lambda_handler
+  orchestrator:
+    handler: functions/orchestrator.lambda_handler
     events:
       - schedule: rate(1 minute)
     environment:
@@ -125,8 +125,8 @@ functions:
   consumer-slave:
     handler: functions/consumer_slave.lambda_handler
 
-  consumer-master-past:
-    handler: functions/consumer_master_past.lambda_handler
+  consumer-master:
+    handler: functions/consumer_master.lambda_handler
 
 resources:
  Resources:

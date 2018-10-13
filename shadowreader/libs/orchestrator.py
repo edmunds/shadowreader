@@ -219,6 +219,6 @@ def generate_step_from_mytime(mytime) -> int:
 def print_to_logs(consumer_event, apps):
     if consumer_event and apps:
         msg = "\n".join([x.name for x in apps])
-        print(f"Invoke consumer-master-past for: {len(apps)} apps\n{msg}")
+        print(f"Invoke consumer-master for: {len(apps)} apps\n{msg}")
         print("Sample consumer_event:")
         pprint(consumer_event)
