@@ -11,63 +11,77 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 import boto3
-
+from botocore.exceptions import ClientError
 from classes.mytime import MyTime
 from utils.conf import env_vars
+from utils.conf import sr_plugins
 
-region = env_vars['region']
-
-# Create CloudWatch clients
-cw = boto3.client('cloudwatch', region_name=region)
+region = env_vars["region"]
+cw = boto3.client("cloudwatch", region_name=region)
 
 
-def put_lambda_metric_w_app_and_env_to_test(metric_name: str,
-                                            sr_stage: str,
-                                            lambda_name: str,
-                                            app: str,
-                                            identifier: str,
-                                            mytime: MyTime,
-                                            storage_resolution: int = 60,
-                                            val: float = 0) -> dict:
+def put_lambda_metric_w_app_and_env_to_test(
+        metric_name: str,
+        stage: str,
+        lambda_name: str,
+        app: str,
+        identifier: str,
+        mytime: MyTime,
+        storage_resolution: int = 60,
+        val: float = 0,
+) -> dict:
     """ Put a custom CloudWatch metric in the "sr" namespace """
-    dimensions = [{
-        'Name': 'sr_stage',
-        'Value': sr_stage
-    }, {
-        'Name': 'lambda',
-        'Value': lambda_name
-    }, {
-        'Name': 'app',
-        'Value': app
-    }, {
-        'Name': 'identifier',
-        'Value': identifier
-    }]
+    dimensions = [
+        {
+            "Name": "stage",
+            "Value": stage
+        },
+        {
+            "Name": "lambda",
+            "Value": lambda_name
+        },
+        {
+            "Name": "app",
+            "Value": app
+        },
+        {
+            "Name": "identifier",
+            "Value": identifier
+        },
+    ]
     timestamp = mytime.epoch
-    namespace = 'sr'
-    resp = _put_metric(namespace, metric_name, dimensions, timestamp, val,
-                       storage_resolution)
+    namespace = "sr"
+    try:
+        resp = _put_metric(namespace, metric_name, dimensions, timestamp, val,
+                           storage_resolution)
+    except ClientError as e:
+        resp = None
+
     return resp
 
 
-def _put_metric(namespace: str,
-                metric_name: str,
-                dimensions: list,
-                timestamp: int,
-                val: float,
-                storage_resolution: int = 60):
+def _put_metric(
+        namespace: str,
+        metric_name: str,
+        dimensions: list,
+        timestamp: int,
+        val: float,
+        storage_resolution: int = 60,
+):
     """ Put a custom CloudWatch metric """
     resp = cw.put_metric_data(
         Namespace=namespace,
         MetricData=[{
-            'MetricName': metric_name,
-            'Dimensions': dimensions,
-            'Timestamp': int(timestamp),
-            'Value': val,
-            'Unit': 'Count',
-            'StorageResolution': storage_resolution
-        }])
+            "MetricName": metric_name,
+            "Dimensions": dimensions,
+            "Timestamp": int(timestamp),
+            "Value": val,
+            "Unit": "Count",
+            "StorageResolution": storage_resolution,
+        }],
+    )
     return resp
