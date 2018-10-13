@@ -68,11 +68,11 @@ $ aws elbv2 describe-load-balancers --names SR-Demo-ALB-receiving --region us-ea
 >> "DNSName": "SR-Demo-ALB-receiving-123459376.us-east-1.elb.amazonaws.com",
 ```
 
-Find `orchestrator-past` in `serverless.yml` and edit `base_url` to be `http://{DNSName}`.
+Find `orchestrator` in `serverless.yml` and edit `base_url` to be `http://{DNSName}`.
 
 ```
-orchestrator-past:
-  handler: functions/orchestrator_past.lambda_handler
+orchestrator:
+  handler: functions/orchestrator.lambda_handler
   events:
     - schedule: rate(1 minute)
   environment:

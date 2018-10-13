@@ -138,8 +138,8 @@ Open `serverless.yml` and edit these values:
 # All values except "identifier" must be properly configured.
 # Values below are examples
 
-orchestrator-past:
-  handler: functions/orchestrator_past.lambda_handler
+orchestrator:
+  handler: functions/orchestrator.lambda_handler
   events:
     - schedule: rate(1 minute)
   environment:
