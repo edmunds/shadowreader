@@ -25,7 +25,7 @@ env:
 
 install:
   - pip install -r shadowreader/requirements.txt
-  - wget https://raw.githubusercontent.com/edmunds/shadowreader/master/shadowreader/tests/shadowreader-ci.yml --output-document=shadowreader.yml
+  - wget https://raw.githubusercontent.com/edmunds/shadowreader/$TRAVIS_BRANCH/shadowreader/shadowreader.example.yml --output-document=shadowreader.yml
 
 script:
   - pytest shadowreader/tests/unit
