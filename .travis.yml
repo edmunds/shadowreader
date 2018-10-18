@@ -20,12 +20,19 @@ env:
     - stage=local
     - region=us-east-1
     - parsed_data_bucket=sr-oss-oss-parsed-data
-    - consumer_slave_name=sr-oss-consumer-slave
+    - consumer_worker_name=sr-oss-consumer-worker
     - consumer_master_past_name=sr-oss-consumer-master-past
 
 install:
   - pip install -r shadowreader/requirements.txt
-  - wget https://raw.githubusercontent.com/edmunds/shadowreader/$TRAVIS_BRANCH/shadowreader/shadowreader.example.yml --output-document=shadowreader.yml
+  
+  # Set BRANCH to the name of the branch being built.
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  
+  # Download necessary config file from the correct repository branch.
+  # eg. If building branch "test123" for repo edmunds/shadowreader
+  #     then it will download https://raw.githubusercontent.com/edmunds/shadowreader/test123/shadowreader/shadowreader.example.yml
+  - wget https://raw.githubusercontent.com/$TRAVIS_REPO_SLUG/$BRANCH/shadowreader/shadowreader.example.yml --output-document=shadowreader.yml
 
 script:
   - pytest shadowreader/tests/unit
