@@ -28,11 +28,15 @@ install:
   
   # Set BRANCH to the name of the branch being built.
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - export REPO_SLUG=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_REPO_SLUG; else echo $TRAVIS_PULL_REQUEST_SLUG; fi)
   
   # Download necessary config file from the correct repository branch.
   # eg. If building branch "test123" for repo edmunds/shadowreader
   #     then it will download https://raw.githubusercontent.com/edmunds/shadowreader/test123/shadowreader/shadowreader.example.yml
-  - wget https://raw.githubusercontent.com/$TRAVIS_REPO_SLUG/$BRANCH/shadowreader/shadowreader.example.yml --output-document=shadowreader.yml
+  - wget https://raw.githubusercontent.com/$REPO_SLUG/$BRANCH/shadowreader/shadowreader.example.yml --output-document=shadowreader.yml
 
 script:
   - pytest shadowreader/tests/unit
+  - echo REPO_SLUG=$REPO_SLUG
+  - echo TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG
+  - echo TRAVIS_PULL_REQUEST_SLUG=$TRAVIS_PULL_REQUEST_SLUG
