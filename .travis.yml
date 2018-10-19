@@ -28,6 +28,7 @@ install:
   
   # Set BRANCH to the name of the branch being built.
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  # Set REPO_SLUG to the name of the repo being built.
   - export REPO_SLUG=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_REPO_SLUG; else echo $TRAVIS_PULL_REQUEST_SLUG; fi)
   
   # Download necessary config file from the correct repository branch.
@@ -37,6 +38,3 @@ install:
 
 script:
   - pytest shadowreader/tests/unit
-  - echo REPO_SLUG=$REPO_SLUG
-  - echo TRAVIS_REPO_SLUG=$TRAVIS_REPO_SLUG
-  - echo TRAVIS_PULL_REQUEST_SLUG=$TRAVIS_PULL_REQUEST_SLUG
