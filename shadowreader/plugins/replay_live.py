@@ -24,7 +24,7 @@ def main(**kwargs):
     app = kwargs.get("app_name", "")
     lambda_start_time = lambda_start_time.to_utc()
     lambda_start_time = lambda_start_time.set_seconds_to_zero().add_timedelta(
-        minutes=-6
+        minutes=-8
     )
 
     s3_parsed_data_key = s3._generate_s3_key(mytime=lambda_start_time, app_name=app)
