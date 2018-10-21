@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from libs import slave
+from libs import worker
 
 from requests_futures.sessions import FuturesSession
 
 
-def test_send_requests_slave(monkeypatch):
+def test_send_requests_worker(monkeypatch):
     load = [
         {
             "url": "http://shadowreader.example.com",
@@ -30,9 +30,9 @@ def test_send_requests_slave(monkeypatch):
     headers = {"User-Agent": "sr_pytest"}
 
     fut = FuturesSession().get("http://www.example.com")
-    monkeypatch.setattr("libs.slave._send_request", lambda a, b, c, d, e, f, g: fut)
+    monkeypatch.setattr("libs.worker._send_request", lambda a, b, c, d, e, f, g: fut)
 
-    futs, timeouts, exceptions = slave.send_requests_slave(
+    futs, timeouts, exceptions = worker.send_requests_worker(
         load=load, delay=0.1, random_delay=True, headers=headers
     )
 

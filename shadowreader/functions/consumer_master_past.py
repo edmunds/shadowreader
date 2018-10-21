@@ -20,7 +20,7 @@ from collections import ChainMap
 from libs import s3
 from libs.lambda_init import init_lambda, init_consumer_master
 from libs.loader import loader_main
-from libs.master import invoke_slave_lambdas
+from libs.master import invoke_worker_lambdas
 from utils.conf import sr_plugins
 
 
@@ -111,7 +111,7 @@ def lambda_handler(event, context):
 
         emit_metrics(base_metric, num_reqs_pre_filter, num_reqs_after_filter)
 
-        invoke_slave_lambdas(
+        invoke_worker_lambdas(
             load=load,
             app=app,
             identifier=identifier,

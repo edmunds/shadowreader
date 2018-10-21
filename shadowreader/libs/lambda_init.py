@@ -93,7 +93,7 @@ def init_consumer_master(event: dict):
     return app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline
 
 
-def init_consumer_slave(event: dict):
+def init_consumer_worker(event: dict):
     payload = event["payload"]
     event = zipper.decompress(data=payload)
     event = json.loads(event)

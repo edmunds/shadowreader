@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from functions import consumer_slave
+from functions import consumer_worker
 import json
 from libs import zipper
 from libs.loader import loader_main
@@ -52,7 +52,7 @@ myload = [
 ]
 
 
-def test_consumer_slave_lambda_handler():
+def test_consumer_worker_lambda_handler():
     load = loader_main(
         load=myload, rate=1, baseline=0, base_url="https://postman-echo.com", filters={}
     )
@@ -69,12 +69,12 @@ def test_consumer_slave_lambda_handler():
         "app": "pytest",
         "identifier": "qa",
         "parent_lambda": "pytest",
-        "child_lambda": "sr-dev-consumer-slave",
+        "child_lambda": "sr-dev-consumer-worker",
         "headers": {"User-Agent": "sr-dev-pytest"},
     }
 
     event = json.dumps(event)
     event = zipper.compress(data=event)
     event = {"payload": event}
-    num_reqs_val = consumer_slave.lambda_handler(event, "")
+    num_reqs_val = consumer_worker.lambda_handler(event, "")
     assert num_reqs_val == 1

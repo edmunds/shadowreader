@@ -26,27 +26,27 @@ from libs import zipper
 from libs.delay import (
     calculate_delay_per_req,
     calculate_total_expected_execution_time,
-    calculate_delays_between_slaves,
+    calculate_delays_between_workers,
     make_delays_random,
 )
 
 cl = boto3.client("lambda", region_name=env_vars["region"])
 
-consumer_slave_lambda = env_vars["consumer_slave_name"]
+consumer_worker_lambda = env_vars["consumer_worker_name"]
 
 
-def invoke_slave_lambdas(
+def invoke_worker_lambdas(
     *, load: list, app: str, identifier: str, parent_lambda: str, headers: dict
 ):
-    print(f"Start invoking slave lambdas: {app}")
+    print(f"Start invoking worker lambdas: {app}")
     if len(load) == 0:
-        print(f"Load was empty, stopping slave invocations: {app}")
+        print(f"Load was empty, stopping worker invocations: {app}")
         return 0, 0, 0  # return futs, timeouts, exceptions to CW metrics
 
     load_chunks, chunk_size = _generate_chunked_load(load, chunk_max=100)
 
     delay_per_req = _calculate_delays(load_size=len(load))
-    delays = calculate_delays_between_slaves(load_chunks, delay_per_req)
+    delays = calculate_delays_between_workers(load_chunks, delay_per_req)
 
     delay_random = True
     delays = make_delays_random(delays)
@@ -60,14 +60,14 @@ def invoke_slave_lambdas(
         "app": app,
         "identifier": identifier,
         "parent_lambda": parent_lambda,
-        "child_lambda": consumer_slave_lambda,
+        "child_lambda": consumer_worker_lambda,
         "headers": headers,
     }
 
-    _invoke_slaves(event, load_chunks, delays)
+    _invoke_workers(event, load_chunks, delays)
 
 
-def _invoke_slaves(event, load_chunks, delays):
+def _invoke_workers(event, load_chunks, delays):
     print("chunks:", [len(ch) for ch in load_chunks])
     print("delays:", delays)
     print("delay total:", sum(delays))
@@ -75,23 +75,23 @@ def _invoke_slaves(event, load_chunks, delays):
     num_chunks = len(load_chunks)
     for i, chunk in enumerate(load_chunks):
         event["load"] = chunk
-        event["slave_num"] = f"{i}/{num_chunks}"
-        delay_for_this_slave = delays[i]
+        event["worker_num"] = f"{i}/{num_chunks}"
+        delay_for_this_worker = delays[i]
 
-        _invoke_func_w_zip(event, consumer_slave_lambda)
+        _invoke_func_w_zip(event, consumer_worker_lambda)
 
         if i < num_chunks - 1:
             time.sleep(
-                delay_for_this_slave
-            )  # Sleep if this is not the last slave lambda to invoke
+                delay_for_this_worker
+            )  # Sleep if this is not the last worker lambda to invoke
 
 
-def _calculate_delays_for_slaves(load_chunks, delay_per_req):
+def _calculate_delays_for_workers(load_chunks, delay_per_req):
     delays = []
     for chunk in load_chunks:
         num_reqs = len(chunk)
-        delay_for_this_slave = delay_per_req * num_reqs
-        delays.append(delay_for_this_slave)
+        delay_for_this_worker = delay_per_req * num_reqs
+        delays.append(delay_for_this_worker)
     return delays
 
 

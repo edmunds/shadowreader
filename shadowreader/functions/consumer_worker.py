@@ -18,8 +18,8 @@ import traceback
 from collections import ChainMap
 
 from libs import lambda_init
-from libs.slave import send_requests_slave
-from libs.lambda_init import init_consumer_slave
+from libs.worker import send_requests_worker
+from libs.lambda_init import init_consumer_worker
 
 from utils.conf import sr_plugins
 
@@ -60,12 +60,12 @@ def lambda_handler(event, context):
         )
         stage = env_vars["stage"]
 
-        app, load, identifier, delay_random, delay_per_req, headers = init_consumer_slave(
+        app, load, identifier, delay_random, delay_per_req, headers = init_consumer_worker(
             event
         )
 
         # Send out requests
-        futs, timeouts, exceptions = send_requests_slave(
+        futs, timeouts, exceptions = send_requests_worker(
             load, delay_per_req, delay_random, headers
         )
 

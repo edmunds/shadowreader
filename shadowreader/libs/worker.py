@@ -25,7 +25,7 @@ from utils.conf import sr_plugins, sr_config
 timeouts = sr_config["timeouts"]
 
 
-def send_requests_slave(load: list, delay: float, random_delay: bool, headers: dict):
+def send_requests_worker(load: list, delay: float, random_delay: bool, headers: dict):
     """
     Start sending out requests, given load (URLs), delay (delay to insert between requests) and headers (User-Agent
     for the requests)
@@ -40,39 +40,39 @@ def send_requests_slave(load: list, delay: float, random_delay: bool, headers: d
 
     session = FuturesSession(max_workers=5)
 
-    if sr_plugins.exists("slave_headers"):
-        slave_headers = sr_plugins.load("slave_headers")
+    if sr_plugins.exists("worker_headers"):
+        worker_headers = sr_plugins.load("worker_headers")
     else:
-        slave_headers = None
+        worker_headers = None
 
-    futs = _send_futs_slave(
+    futs = _send_futs_worker(
         session,
         load,
         delay=delay,
         random_delay=random_delay,
         headers=headers,
-        slave_headers=slave_headers,
+        worker_headers=worker_headers,
     )
-    futs, timeouts, exceptions = _collect_futs_slave(futs)
+    futs, timeouts, exceptions = _collect_futs_worker(futs)
 
     return futs, timeouts, exceptions
 
 
-def _send_futs_slave(
+def _send_futs_worker(
     session,
     load: list,
     delay: float,
     random_delay: bool,
     headers: dict,
-    slave_headers: Callable[[dict, dict], dict] = None,
+    worker_headers: Callable[[dict, dict], dict] = None,
 ):
     """ Start load testing by sending requests to the specified URLs """
     futs = []
     for l in load:
         _do_sleep(delay, random_delay)
 
-        if slave_headers:
-            headers = slave_headers.main(load=l, headers=headers)
+        if worker_headers:
+            headers = worker_headers.main(load=l, headers=headers)
 
         init_timeout = timeouts["init_timeout"]
         resp_timeout = timeouts["resp_timeout"]
@@ -124,7 +124,7 @@ def _do_sleep(delay, random_delay):
             time.sleep(delay)
 
 
-def _collect_futs_slave(futs):
+def _collect_futs_worker(futs):
     timeouts, exceptions = 0, 0
     errs = []
     for i, fut in enumerate(futs):

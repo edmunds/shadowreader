@@ -36,8 +36,8 @@ def lambda_handler(event, context):
         First gather the necessary test params, init App objects, filters and compute the current step
         After,
         then send (app, env_to_test, cur_timestamp, rate) to consumer-master
-        consumer-master will then fetch data set (set of URLs) from S3, then pass it to multiple consumer-slaves
-        each consumer-slave will then send out requests to test environment (each slave handles up to 100 requests)
+        consumer-master will then fetch data set (set of URLs) from S3, then pass it to multiple consumer-workers
+        each consumer-worker will then send out requests to test environment (each worker handles up to 100 requests)
         """
 
         mytime, lambda_name, env_vars = lambda_init.init_lambda(context)
@@ -114,5 +114,5 @@ def lambda_handler(event, context):
     except Exception as e:
         trace = traceback.format_exc()
         raise Exception(trace)
-    
+
     return json.dumps(cur_params, default=str), json.dumps(consumer_event, default=str)

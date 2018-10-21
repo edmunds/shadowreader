@@ -17,7 +17,7 @@ import random
 
 
 def calculate_total_expected_execution_time(load_size: int) -> float:
-    """ Total time consumer-master should buffer out slave invocations for"""
+    """ Total time consumer-master should buffer out worker invocations for"""
     if load_size < 500:
         total_expected_execution_time = 70
     else:
@@ -28,19 +28,19 @@ def calculate_total_expected_execution_time(load_size: int) -> float:
 def calculate_delay_per_req(
     num_total_requests: int, total_expected_execution_time: float
 ) -> float:
-    """ Calculate the delay to insert between each request sent by slave lambda """
+    """ Calculate the delay to insert between each request sent by worker lambda """
     delay_per_req = total_expected_execution_time / num_total_requests
     delay_per_req = round(delay_per_req, 3)
     return delay_per_req
 
 
-def calculate_delays_between_slaves(load_chunks, delay_per_req):
-    """ Calculate amount of delay to insert between slave invocations"""
+def calculate_delays_between_workers(load_chunks, delay_per_req):
+    """ Calculate amount of delay to insert between worker invocations"""
     delays = []
     for chunk in load_chunks:
         num_reqs = len(chunk)
-        delay_for_this_slave = delay_per_req * num_reqs
-        delays.append(delay_for_this_slave)
+        delay_for_this_worker = delay_per_req * num_reqs
+        delays.append(delay_for_this_worker)
     return delays
 
 

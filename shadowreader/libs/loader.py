@@ -20,7 +20,7 @@ import random
 from utils.conf import sr_plugins
 
 """
-Functions for generating and transforming load test data to load to be used for consumer_slave
+Functions for generating and transforming load test data to load to be used for consumer_worker
 """
 
 

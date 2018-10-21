@@ -35,13 +35,13 @@ def test_calculate_total_expected_excecution_time():
     assert 50 <= delay2 <= 70
 
 
-def test_calculate_delay_between_slaves():
+def test_calculate_delay_between_workers():
     load = [1] * 1234
     load_chunks, load_size = master._generate_chunked_load(load=load, chunk_max=100)
     delay_per_req = delay.calculate_delay_per_req(
         num_total_requests=len(load), total_expected_execution_time=65
     )
-    delays = delay.calculate_delays_between_slaves(load_chunks, delay_per_req)
+    delays = delay.calculate_delays_between_workers(load_chunks, delay_per_req)
     from pprint import pprint
 
     pprint(load_chunks)
@@ -51,13 +51,13 @@ def test_calculate_delay_between_slaves():
     assert int(sum(delays)) == 65
 
 
-def test_calculate_delay_between_slaves_random():
+def test_calculate_delay_between_workers_random():
     load = [1] * 1234
     load_chunks, load_size = master._generate_chunked_load(load=load, chunk_max=100)
     delay_per_req = delay.calculate_delay_per_req(
         num_total_requests=len(load), total_expected_execution_time=65
     )
-    delays = delay.calculate_delays_between_slaves(load_chunks, delay_per_req)
+    delays = delay.calculate_delays_between_workers(load_chunks, delay_per_req)
     delays_rand = delay.make_delays_random(delays)
 
     assert delays[0] != delays_rand[0] and len(delays) == len(delays_rand)
