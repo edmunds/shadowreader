@@ -32,7 +32,7 @@ def test_main():
     s3_parsed_data_key = replay_live.main(
         lambda_start_time=lambda_start_time, app_name=app_name
     )
-    assert s3_parsed_data_key == "myELB/2018/10/01/08/1538382300"
+    assert s3_parsed_data_key == "myELB/2018/10/01/08/1538382180"
 
 
 if __name__ == "__main__":
