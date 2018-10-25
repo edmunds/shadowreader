@@ -149,7 +149,7 @@ watch -n 1 curl http://SR-Demo-ALB-log-generator-1234567.us-east-1.elb.amazonaws
 
 You should now start seeing ALB logs being deposited to the `sr-access-logs` S3 bucket.
 
-In about 6 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed to SR-Demo-ALB-receiving
+In about 8 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed to SR-Demo-ALB-receiving
 
 ## See the results
 
