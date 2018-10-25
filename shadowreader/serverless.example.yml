@@ -190,7 +190,6 @@ resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - sns:CreateTopic
                   - sns:Get*
                   - sns:List*
                   - sns:Publish
@@ -211,10 +210,9 @@ resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - s3:List*
-                  - s3:Read*
-                  - s3:Put*
-                  - s3:Get*
+                  - s3:ListBucket
+                  - s3:GetObject*
+                  - s3:PutObject*
                 Resource: "*"
         -
           PolicyName: "cw-get-put"
@@ -223,5 +221,7 @@ resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - cloudwatch:*
+                  - cloudwatch:PutMetricData
+                  - cloudwatch:GetMetricData
+                  - cloudwatch:ListMetrics
                 Resource: "*"
