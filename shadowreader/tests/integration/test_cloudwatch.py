@@ -36,7 +36,7 @@ def test_put_lambda_metric_w_app_and_env_to_test():
     mytime = MyTime()
     resp = cw.put_lambda_metric_w_app_and_env_to_test(
         "pytest",
-        sr_stage="local",
+        stage="local",
         lambda_name="pytest",
         app="pytest",
         identifier="local",
