@@ -54,7 +54,7 @@ def put_lambda_metric_w_app_and_env_to_test(
         },
     ]
     timestamp = mytime.epoch
-    namespace = "shadowreaderdebugfalse3"
+    namespace = "shadowreader"
     try:
         resp = _put_metric(namespace, metric_name, dimensions, timestamp, val,
                            storage_resolution)
