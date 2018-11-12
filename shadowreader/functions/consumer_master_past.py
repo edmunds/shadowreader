@@ -21,7 +21,7 @@ from libs import s3
 from libs.lambda_init import init_lambda, init_consumer_master
 from libs.loader import loader_main
 from libs.master import invoke_worker_lambdas
-from utils.conf import sr_plugins
+from utils.conf import sr_plugins, sr_config
 
 
 def emit_metrics(
@@ -47,7 +47,10 @@ def emit_metrics(
     num_reqs_all = {"app": "all", "name": "num_requests", "val": num_reqs_after_filter}
     num_reqs_all = ChainMap(num_reqs_all, base_metric)
 
-    metrics = [num_reqs_pre_filter, num_reqs_pre_filter_all, num_reqs, num_reqs_all]
+    if sr_config["debug"]:
+        metrics = [num_reqs_pre_filter, num_reqs_pre_filter_all, num_reqs, num_reqs_all]
+    else:
+        metrics = [num_reqs]
 
     if sr_plugins.exists("metrics"):
         metric_emitter = sr_plugins.load("metrics")

@@ -82,7 +82,7 @@ def lambda_handler(event, context):
         metrics = []
         for app in apps:
             metric = {
-                "name": "timestamp",
+                "name": "replayed_timestamp",
                 "stage": stage,
                 "lambda_name": lambda_name,
                 "app": app.name,

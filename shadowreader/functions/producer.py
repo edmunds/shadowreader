@@ -55,8 +55,8 @@ def lambda_handler(event, context):
             "name": "parsed_timestamp",
             "stage": stage,
             "lambda_name": lambda_name,
-            "app": "all",
-            "identifier": identifier,
+            "app": identifier,
+            "identifier": 'oss',
             "mytime": mytime,
             "val": mytime.epoch,
         }
