@@ -21,7 +21,7 @@ from libs import lambda_init
 from libs.worker import send_requests_worker
 from libs.lambda_init import init_consumer_worker
 
-from utils.conf import sr_plugins
+from utils.conf import sr_plugins, sr_config
 
 
 def emit_metrics(base_metric: dict, num_reqs_val: int, timeouts: int, exceptions: int):
@@ -47,7 +47,7 @@ def emit_metrics(base_metric: dict, num_reqs_val: int, timeouts: int, exceptions
         num_exceptions = ChainMap(num_exceptions, base_metric)
         metrics.append(num_exceptions)
 
-    if sr_plugins.exists("metrics"):
+    if sr_plugins.exists("metrics") and sr_config['debug']:
         metric_emitter = sr_plugins.load("metrics")
         for metric in metrics:
             metric_emitter.main(metric)
