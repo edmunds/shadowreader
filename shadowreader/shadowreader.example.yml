@@ -15,6 +15,9 @@
 plugins:
   loader_middleware: loader_middleware
   replay_mode: replay_past
+  # Uncomment below to allow ShadowReader to push metrics to CloudWatch
+  # The metrics reported are: request rate, parsed timestamp, and replayed timestamp
+  # metrics: cloudwatch
 
   # Required:
   # The 'producer' section controls the type of load balancer logs to parse.
@@ -33,3 +36,5 @@ config:
   timeouts:
     init_timeout: 1 # Requests sent by the load test must establish a connection under this many seconds otherwise it will result in a timeout
     resp_timeout: 3 # Requests sent by the load test must return a response under this many seconds otherwise it will result in a timeout
+
+  debug: false  # Turning debug on will push additional metrics to CloudWatch if the CloudWatch metrics plugin is enabled
