@@ -47,6 +47,9 @@ def emit_metrics(base_metric: dict, num_reqs_val: int, timeouts: int, exceptions
         num_exceptions = ChainMap(num_exceptions, base_metric)
         metrics.append(num_exceptions)
 
+    # If debug is on then send request rate metrics for each worker lambda.
+    # Warning: If the total number of requests is high than there can be
+    # 100s of worker lambdas sending custom CW metrics every minute.
     if sr_plugins.exists("metrics") and sr_config['debug']:
         metric_emitter = sr_plugins.load("metrics")
         for metric in metrics:

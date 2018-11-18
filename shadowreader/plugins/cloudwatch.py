@@ -21,7 +21,7 @@ class MetricEmitter:
             raise ValueError(
                 f"MetricEmitter is missing metric details: {type(e)}, {e}, {metric}"
             )
-
+        
         self.resp = cw.put_lambda_metric_w_app_and_env_to_test(
             self.name,
             self.stage,

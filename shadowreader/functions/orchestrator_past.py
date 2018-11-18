@@ -81,6 +81,8 @@ def lambda_handler(event, context):
         # Collect metrics and put metrics into CW
         metrics = []
         for app in apps:
+            # This is the timestamp (in epoch time) that is being replayed
+            # by the load test.
             metric = {
                 "name": "replayed_timestamp",
                 "stage": stage,
