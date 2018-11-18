@@ -47,6 +47,8 @@ def emit_metrics(
     num_reqs_all = {"app": "all", "name": "num_requests", "val": num_reqs_after_filter}
     num_reqs_all = ChainMap(num_reqs_all, base_metric)
 
+    # If debug is on, then send extra metrics to CloudWatch
+    # If debug is off only send metric on total number of requests sent
     if sr_config["debug"]:
         metrics = [num_reqs_pre_filter, num_reqs_pre_filter_all, num_reqs, num_reqs_all]
     else:

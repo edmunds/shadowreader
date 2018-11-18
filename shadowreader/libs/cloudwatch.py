@@ -34,7 +34,7 @@ def put_lambda_metric_w_app_and_env_to_test(
         storage_resolution: int = 60,
         val: float = 0,
 ) -> dict:
-    """ Put a custom CloudWatch metric in the "sr" namespace """
+    """ Put a custom CloudWatch metric in the "shadowreader" namespace """
     dimensions = [
         {
             "Name": "stage",
