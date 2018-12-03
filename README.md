@@ -28,8 +28,9 @@ Support for replaying logs from these load balancers:
 
 To get started, see:
 
-1. [Batteries included demo for trying out live replay](docs/demo_live_replay.md)
-2. [More in-depth guide for setting up past replay](docs/setup.md)
+- [Batteries included demo for trying out live replay](docs/demo_live_replay.md)
+- [More in-depth guide for setting up past replay](docs/setup.md)
+- [How to send load test metrics to CloudWatch](docs/cloudwatch-guide.md)
 
 ## Case study
 
