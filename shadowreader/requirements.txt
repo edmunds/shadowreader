@@ -1,4 +1,4 @@
 requests-futures==0.9.7
-pytz==2018.4
-boto3==1.7.4
-PyYAML==3.12
+pytz>=2018.4
+boto3>=1.7.4
+PyYAML>=3.13
