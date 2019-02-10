@@ -14,14 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import traceback
 from collections import ChainMap
 
 from libs import s3
 from libs.lambda_init import init_lambda, init_consumer_master
 from libs.loader import loader_main
 from libs.master import invoke_worker_lambdas
-from utils.conf import sr_plugins, sr_config
+from utils.conf import sr_plugins, sr_config, exception_handler
 
 
 def emit_metrics(
@@ -60,6 +59,7 @@ def emit_metrics(
             metric_emitter.main(metric)
 
 
+@exception_handler
 def lambda_handler(event, context):
     """
     Example event passed from orchestrator-past Lambda
@@ -73,59 +73,54 @@ def lambda_handler(event, context):
         'headers': headers,
     }
     """
-    try:
-        mytime, lambda_name, env_vars = init_lambda(context)
-        stage = env_vars["stage"]
+    mytime, lambda_name, env_vars = init_lambda(context)
+    stage = env_vars["stage"]
 
-        app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline = init_consumer_master(
-            event
-        )
+    app, identifier, cur_timestamp, rate, headers, filters, base_url, baseline = init_consumer_master(
+        event
+    )
 
-        parsed_data_bucket = env_vars["parsed_data_bucket"]
+    parsed_data_bucket = env_vars["parsed_data_bucket"]
 
-        replay_mode = sr_plugins.load("replay_mode")
-        kwargs = {
-            "lambda_start_time": mytime,
-            "app_name": app,
-            "app_cur_timestamp": cur_timestamp,
-        }
-        s3_parsed_data_key = replay_mode.main(**kwargs)
+    replay_mode = sr_plugins.load("replay_mode")
+    kwargs = {
+        "lambda_start_time": mytime,
+        "app_name": app,
+        "app_cur_timestamp": cur_timestamp,
+    }
+    s3_parsed_data_key = replay_mode.main(**kwargs)
 
-        print(f"s3://{parsed_data_bucket}/{s3_parsed_data_key}")
+    print(f"s3://{parsed_data_bucket}/{s3_parsed_data_key}")
 
-        # Fetch from S3 the URLs to send for this load test
-        load = s3.fetch_from_s3(key=s3_parsed_data_key, bucket=parsed_data_bucket)
+    # Fetch from S3 the URLs to send for this load test
+    load = s3.fetch_from_s3(key=s3_parsed_data_key, bucket=parsed_data_bucket)
 
-        num_reqs_pre_filter = len(load)
+    num_reqs_pre_filter = len(load)
 
-        # Transform the URLs based on the test params and filters
-        load = loader_main(
-            load=load, rate=rate, baseline=baseline, base_url=base_url, filters=filters
-        )
+    # Transform the URLs based on the test params and filters
+    load = loader_main(
+        load=load, rate=rate, baseline=baseline, base_url=base_url, filters=filters
+    )
 
-        num_reqs_after_filter = len(load)
+    num_reqs_after_filter = len(load)
 
-        # Init base metric dict
-        base_metric = {
-            "stage": stage,
-            "lambda_name": lambda_name,
-            "app": app,
-            "identifier": identifier,
-            "mytime": mytime,
-        }
+    # Init base metric dict
+    base_metric = {
+        "stage": stage,
+        "lambda_name": lambda_name,
+        "app": app,
+        "identifier": identifier,
+        "mytime": mytime,
+    }
 
-        emit_metrics(base_metric, num_reqs_pre_filter, num_reqs_after_filter)
+    emit_metrics(base_metric, num_reqs_pre_filter, num_reqs_after_filter)
 
-        invoke_worker_lambdas(
-            load=load,
-            app=app,
-            identifier=identifier,
-            parent_lambda=lambda_name,
-            headers=headers,
-        )
-
-    except Exception as e:
-        trace = traceback.format_exc()
-        raise Exception(trace)
+    invoke_worker_lambdas(
+        load=load,
+        app=app,
+        identifier=identifier,
+        parent_lambda=lambda_name,
+        headers=headers,
+    )
 
     return app
