@@ -136,9 +136,10 @@ env_vars = sr_plugins.env_vars
 
 
 def exception_handler(lambda_handler):
-    """ Automatically wraps up a response and status code
-    in the way ALB expects it to. In case of runtime error,
-    it returns the stack trace with a status 400.
+    """ Decorator which will on runtime error
+    get the full stack trace and re-raise the exception.
+    This way, the whole stack trace will be sent to the DLQ SNS topic
+    rather than just the name of the exception and exception message.
     """
 
     @wraps(lambda_handler)
