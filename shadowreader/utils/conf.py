@@ -18,6 +18,8 @@ import yaml
 from collections import defaultdict
 import importlib
 import pkgutil
+from functools import wraps
+import traceback
 
 from classes.exceptions import InvalidLambdaEnvVarError
 
@@ -131,3 +133,21 @@ class Plugins:
 sr_plugins = Plugins()
 sr_config = sr_plugins.sr_config
 env_vars = sr_plugins.env_vars
+
+
+def exception_handler(lambda_handler):
+    """ Automatically wraps up a response and status code
+    in the way ALB expects it to. In case of runtime error,
+    it returns the stack trace with a status 400.
+    """
+
+    @wraps(lambda_handler)
+    def wrapper(*args, **kwargs):
+        try:
+            resp = lambda_handler(*args, **kwargs)
+        except Exception:
+            trace = traceback.format_exc()
+            raise Exception(trace)
+        return resp
+
+    return wrapper

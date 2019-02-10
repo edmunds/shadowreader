@@ -14,14 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import traceback
 from collections import ChainMap
 
 from libs import lambda_init
 from libs.worker import send_requests_worker
 from libs.lambda_init import init_consumer_worker
 
-from utils.conf import sr_plugins, sr_config
+from utils.conf import sr_plugins, sr_config, exception_handler
 
 
 def emit_metrics(base_metric: dict, num_reqs_val: int, timeouts: int, exceptions: int):
@@ -50,47 +49,44 @@ def emit_metrics(base_metric: dict, num_reqs_val: int, timeouts: int, exceptions
     # If debug is on then send request rate metrics for each worker lambda.
     # Warning: If the total number of requests is high than there can be
     # 100s of worker lambdas sending custom CW metrics every minute.
-    if sr_plugins.exists("metrics") and sr_config['debug']:
+    if sr_plugins.exists("metrics") and sr_config["debug"]:
         metric_emitter = sr_plugins.load("metrics")
         for metric in metrics:
             metric_emitter.main(metric)
 
 
+@exception_handler
 def lambda_handler(event, context):
-    try:
-        mytime, lambda_name, env_vars = lambda_init.init_lambda(
-            context, print_time=False
-        )
-        stage = env_vars["stage"]
+    mytime, lambda_name, env_vars = lambda_init.init_lambda(context, print_time=False)
+    stage = env_vars["stage"]
 
-        app, load, identifier, delay_random, delay_per_req, headers = init_consumer_worker(
-            event
-        )
+    app, load, identifier, delay_random, delay_per_req, headers = init_consumer_worker(
+        event
+    )
 
-        # Send out requests
-        futs, timeouts, exceptions = send_requests_worker(
-            load, delay_per_req, delay_random, headers
-        )
+    # Send out requests
+    futs, timeouts, exceptions = send_requests_worker(
+        load, delay_per_req, delay_random, headers
+    )
 
-        num_reqs_val = len(load)
+    num_reqs_val = len(load)
 
-        # Init base metric dict
-        base_metric = {
-            "stage": stage,
-            "lambda_name": lambda_name,
-            "app": app,
-            "identifier": identifier,
-            "mytime": mytime,
-            "resolution": 1,
-        }
+    # Init base metric dict
+    base_metric = {
+        "stage": stage,
+        "lambda_name": lambda_name,
+        "app": app,
+        "identifier": identifier,
+        "mytime": mytime,
+        "resolution": 1,
+    }
 
-        emit_metrics(base_metric, num_reqs_val, timeouts, exceptions)
+    emit_metrics(base_metric, num_reqs_val, timeouts, exceptions)
 
-        msg = f"app: {app}, env: {identifier} # reqs: {num_reqs_val}, " f"# timeouts: {timeouts}, # exceptions: {exceptions}"
-        print(msg)
-
-    except Exception as e:
-        trace = traceback.format_exc()
-        raise Exception(trace)
+    msg = (
+        f"app: {app}, env: {identifier} # reqs: {num_reqs_val}, "
+        f"# timeouts: {timeouts}, # exceptions: {exceptions}"
+    )
+    print(msg)
 
     return num_reqs_val
