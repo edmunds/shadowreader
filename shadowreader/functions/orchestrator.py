@@ -41,7 +41,7 @@ def lambda_handler(event, context):
 
     mytime, lambda_name, env_vars = lambda_init.init_lambda(context)
     stage = env_vars["stage"]
-    consumer_master_past_lambda = env_vars["consumer_master_past_name"]
+    consumer_master_past_lambda = env_vars["consumer_master_name"]
 
     apps, test_params = init_apps_from_test_params(event)
     filters = init_filters()

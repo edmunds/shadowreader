@@ -17,9 +17,10 @@ limitations under the License.
 from pytz import timezone
 
 from classes.mytime import MyTime
-from functions import orchestrator_past
+from functions import orchestrator
 
 import json
+
 
 def test_orchestrator_lambda_handler(monkeypatch):
     defaults = {
@@ -46,7 +47,7 @@ def test_orchestrator_lambda_handler(monkeypatch):
     if monkeypatch:
         monkeypatch.setattr("utils.conf.sr_plugins.exists", lambda x: False)
 
-    cur_params, consumer_event = orchestrator_past.lambda_handler(defaults, {})
+    cur_params, consumer_event = orchestrator.lambda_handler(defaults, {})
     cur_params = json.loads(cur_params)
     consumer_event = json.loads(consumer_event)
     timestamp = consumer_event["cur_timestamp"]

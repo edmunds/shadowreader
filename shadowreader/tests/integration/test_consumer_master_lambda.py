@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from functions import consumer_master_past
+from functions import consumer_master
 
 
 def test_consumer_master_past_lambda_handler():
@@ -40,5 +40,5 @@ def test_consumer_master_past_lambda_handler():
         "rate": 1,
         "baseline": 0,
     }
-    res = consumer_master_past.lambda_handler(event, {})
+    res = consumer_master.lambda_handler(event, {})
     assert res == test_app
