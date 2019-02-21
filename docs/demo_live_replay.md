@@ -160,7 +160,7 @@ In about 8 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed 
 Check the CloudWatch ` HTTP fixed response count` metrics for SR-Demo-ALB-receiving. It should be similar to the one for SR-Demo-ALB-log-generator.
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay1.png?raw=true" alt="shadow-reader-live-demo-results" width="45%" height="45%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay1.png?raw=true" alt="shadow-reader-live-demo-results" width="60%" height="60%"/>
 </p>
 
 ## Next steps
