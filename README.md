@@ -24,8 +24,8 @@ Support for replaying logs from these load balancers:
 - [Classic Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html)
 - (Support for other types of load balancers planned)
 
-## Read about it
-## [How we fixed a Node.js memory leak by using ShadowReader to replay production traffic into QA](http://technology.edmunds.com/2018/08/25/Investigating-a-Memory-Leak-and-Introducing-ShadowReader/)
+### Read about it
+### [How we fixed a Node.js memory leak by using ShadowReader to replay production traffic into QA](http://technology.edmunds.com/2018/08/25/Investigating-a-Memory-Leak-and-Introducing-ShadowReader/)
 
 
 ## Getting started
@@ -39,7 +39,7 @@ To get started, see:
 ## Trying Live Replay <a name="live-replay"/>
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay2.png?raw=true" alt="shadow-reader-live-demo-results" width="60%" height="60%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay2.png?raw=true" alt="shadow-reader-live-demo-results" width="80%" height="80%"/>
 </p>
 
 This guide will deploy all the necessary AWS resources to try out ShadowReader's live replay feature (replay requests as they come in).
@@ -202,7 +202,7 @@ In about 8 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed 
 Check the CloudWatch ` HTTP fixed response count` metrics for SR-Demo-ALB-receiving. It should be similar to the one for SR-Demo-ALB-log-generator.
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay1.png?raw=true" alt="shadow-reader-live-demo-results" width="60%" height="60%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay1.png?raw=true" alt="shadow-reader-live-demo-results" width="80%" height="80%"/>
 </p>
 
 ## Next steps
