@@ -46,7 +46,6 @@ class App:
             self.loop_duration = 1
 
         self.base_url = self._validate_base_url(base_url)
-
         if identifier:
             self.identifier = identifier
         else:
@@ -111,5 +110,5 @@ class App:
 
         # If base_url does not specify http or https, prefix it with https://
         if not (base_url.startswith("http://") or base_url.startswith("https://")):
-            base_url = f"https://{base_url}"
+            base_url = f"http://{base_url}"
         return base_url

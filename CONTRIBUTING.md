@@ -19,17 +19,23 @@ Please follow PEP8, but the line length limit may be ignored if following it wou
 
 Testing is conducted with Pytest and tests are located inside /tests. Please write new tests for new code you create.
 
+Set these enviroment variables before running any unit tests:
+```
+stage=local
+region=us-east-1
+```
+
 Running the tests
 
 ```
 Run the basic test suite:
-    pytest
+    pytest tests/unit
 
 Running test coverage:
-    pytest --cov .
+    pytest tests/unit --cov .
 
 Running test coverage with HTML report:
-    pytest --cov . --cov-report html --cov-branch
+    pytest tests/unit--cov . --cov-report html --cov-branch
     # then open htmlcov/index.html
 ```
 
