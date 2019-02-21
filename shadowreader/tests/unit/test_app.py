@@ -85,4 +85,4 @@ def test_validate_base_url():
         identifier="qa",
         baseline=100,
     )
-    assert app.base_url == "https://shadowreader.example.com"
+    assert app.base_url == "http://shadowreader.example.com"
