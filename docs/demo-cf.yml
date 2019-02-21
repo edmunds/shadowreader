@@ -156,7 +156,6 @@ Resources:
                   - !Ref "AccessLogBucket"
                   - "/*"
             Principal: {"AWS": !FindInMap [ALBS3AccessAccountID, !Ref 'AWS::Region', Id]}
-
                   
   ALBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -180,12 +179,9 @@ Resources:
 
   SRDemoALBReceiving:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    DependsOn:
-      - SrDemoTargetGroupReceiving
     Properties:
       Name: SR-Demo-ALB-receiving
       Scheme: internet-facing
-      Subnets: !Ref ShadowReaderPublicSubnet1
       Subnets: [ !Ref ShadowReaderPublicSubnet1, !Ref ShadowReaderPublicSubnet2 ]
       SecurityGroups:
         - !Ref ALBSecurityGroup
@@ -193,37 +189,24 @@ Resources:
         - Value: SR-Demo-ALB-receiving
           Key: Name
 
-  SrDemoTargetGroupReceiving:
-      Type: AWS::ElasticLoadBalancingV2::TargetGroup
-      Properties:
-        HealthCheckPath: /
-        Name: SrDemoTargetGroupReceiving
-        VpcId: !Ref ShadowReaderVPC
-        HealthCheckProtocol: HTTP
-        Matcher: 
-          HttpCode: '200'
-        Protocol: HTTP
-        Port: 80
-
   SRDemoALBListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
-          - Type: forward
-            TargetGroupArn: !Ref SrDemoTargetGroupReceiving
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: "text/plain"
+            MessageBody: "Replay me!"
+            StatusCode: "200"
       Protocol: HTTP
       Port: 80
       LoadBalancerArn: !Ref SRDemoALBReceiving
 
-
   SRDemoALBLogs:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    DependsOn:
-      - SrDemoTargetGroupLogGenerator
     Properties:
       Name: SR-Demo-ALB-log-generator
       Scheme: internet-facing
-      Subnets: !Ref ShadowReaderPublicSubnet1
       Subnets: [ !Ref ShadowReaderPublicSubnet1, !Ref ShadowReaderPublicSubnet2 ]
       SecurityGroups:
         - !Ref ALBSecurityGroup
@@ -236,24 +219,15 @@ Resources:
       - Key: access_logs.s3.bucket
         Value: !Ref AccessLogBucket
 
-  SrDemoTargetGroupLogGenerator:
-      Type: AWS::ElasticLoadBalancingV2::TargetGroup
-      Properties:
-        HealthCheckPath: /
-        Name: SrDemoTargetGroupLogGenerator
-        VpcId: !Ref ShadowReaderVPC
-        HealthCheckProtocol: HTTP
-        Matcher: 
-          HttpCode: '200'
-        Protocol: HTTP
-        Port: 80
-
   SRDemoALBListenerLogs:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
-          - Type: forward
-            TargetGroupArn: !Ref SrDemoTargetGroupLogGenerator
+        - Type: fixed-response
+          FixedResponseConfig:
+            ContentType: "text/plain"
+            MessageBody: "Replay me!"
+            StatusCode: "200"
       Protocol: HTTP
       Port: 80
       LoadBalancerArn: !Ref SRDemoALBLogs
