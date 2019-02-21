@@ -14,7 +14,13 @@ This demo will walk you through in setting up ShadowReader to parse those logs t
 ```
 Deploy the stack:
 curl https://raw.githubusercontent.com/edmunds/shadowreader/master/docs/demo-cf.yml --output demo-cf.yml
-aws cloudformation deploy --stack-name sr-demo  --template-file demo-cf.yml --region us-east-1
+aws cloudformation deploy --stack-name sr-demo-resources  --template-file demo-cf.yml --region us-east-1
+```
+
+If you'd rather not deploy a new VPC and subnets, this CF will allow you to choose already existing VPC/Subnets.
+```
+curl https://raw.githubusercontent.com/edmunds/shadowreader/master/docs/demo-cf-choose.yml --output demo-cf-choose.yml
+aws cloudformation deploy --stack-name sr-demo-resources  --template-file demo-cf-choose.yml --region us-east-1 --parameter-overrides subnet1=$SUBNET_ID1 subnet2=$SUBNET_ID2 vpcid=$VPCID
 ```
 
 ## Set up shadowreader.yml
@@ -32,7 +38,7 @@ Replace AWS_REGION with the region you deployed the CloudFormation to.
 
 ```
 environment:
-    access_logs_bucket: sr-access-logs-AWS_REGION-AWS_ACCOUNT_ID/AWSLogs/AWS_ACCOUNT_ID/elasticloadbalancing/AWS_REGION/
+    access_logs_bucket: sr-access-logs-$AWS_REGION-$AWS_ACCOUNT_ID/AWSLogs/$AWS_ACCOUNT_ID/elasticloadbalancing/$AWS_REGION/
 ```
 
 Set `replay_mode` to `replay_live`
@@ -145,18 +151,16 @@ Use [watch](https://linux.die.net/man/1/watch) to start sending requests to our 
 watch -n 1 curl http://SR-Demo-ALB-log-generator-1234567.us-east-1.elb.amazonaws.com
 ```
 
-(The endpoint 503ing is expected)
-
 You should now start seeing ALB logs being deposited to the `sr-access-logs` S3 bucket.
 
 In about 8 minutes, requests sent to SR-Demo-ALB-log-generator will be replayed to SR-Demo-ALB-receiving
 
 ## See the results
 
-Check the CloudWatch `ELB 5XXs` count metrics for SR-Demo-ALB-receiving. It should be similar to the one for SR-Demo-ALB-log-generator.
+Check the CloudWatch ` HTTP fixed response count` metrics for SR-Demo-ALB-receiving. It should be similar to the one for SR-Demo-ALB-log-generator.
 
 <p align="center">
-  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-live-replay-results.png?raw=true" alt="shadow-reader-demo-results" width="45%" height="45%"/>
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/live-replay1.png?raw=true" alt="shadow-reader-live-demo-results" width="45%" height="45%"/>
 </p>
 
 ## Next steps
