@@ -33,9 +33,6 @@ custom:
 
   parsed_data_bucket: ${self:custom.stack_name}-${self:custom.my_project_name}-parsed-data
 
-  consumer_master_past_name: ${self:custom.stack_name}-consumer-master-past
-  consumer_worker_name: ${self:custom.stack_name}-consumer-worker
-
 provider:
   name: aws
   runtime: python3.6
@@ -59,11 +56,7 @@ provider:
   environment:
     stage: ${self:custom.stage}
     region: ${self:custom.region}
-
     parsed_data_bucket: ${self:custom.parsed_data_bucket}
-
-    consumer_master_past_name: ${self:custom.consumer_master_past_name}
-    consumer_worker_name: ${self:custom.consumer_worker_name}
 
 # you can add packaging information here
 package:
