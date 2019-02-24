@@ -29,10 +29,6 @@ config:
   # The following variables must be set according to where your ELB logs are being written to
   access_logs_bucket: myelb-logs-bucket/AWSLogs/123456789/elasticloadbalancing/us-east-1/
   plugins_location: plugins
-  env_vars_to_get: [
-                       'region', 'stage', 'parsed_data_bucket',
-                       'consumer_master_past_name', 'consumer_worker_name'
-                   ]
   timeouts:
     init_timeout: 1 # Requests sent by the load test must establish a connection under this many seconds otherwise it will result in a timeout
     resp_timeout: 3 # Requests sent by the load test must return a response under this many seconds otherwise it will result in a timeout

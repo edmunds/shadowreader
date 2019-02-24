@@ -23,6 +23,8 @@ import traceback
 
 from classes.exceptions import InvalidLambdaEnvVarError
 
+REQUIRED_ENV_VARS = ["region", "stage", "parsed_data_bucket"]
+
 
 def load_yml_config(*, file: str, key: str) -> dict:
     """ Load shadowreader.yml file which specified configs for Shadowreader """
@@ -59,10 +61,14 @@ class Plugins:
             load all specified plugins and store configurations
         """
         sr_config = load_yml_config(file="shadowreader.yml", key="config")
-        self.env_vars = self._init_env_vars(sr_config)
+        self.env_vars = self._init_env_vars()
         self.sr_config = self._identify_keys_w_stage(sr_config, self.env_vars["stage"])
 
         self._sr_plugins = self._load_plugins()
+
+        stage = self.env_vars["stage"]
+        self.env_vars["consumer_master_past_name"] = f"sr-{stage}-consumer-master-past"
+        self.env_vars["consumer_worker_name"] = f"sr-{stage}-consumer-worker"
 
     def exists(self, plugin_name: str) -> bool:
         """ Check if a particular plugin was specified in the config"""
@@ -77,11 +83,11 @@ class Plugins:
         plugin = importlib.import_module(plugin_location)
         return plugin
 
-    def _init_env_vars(self, sr_config):
+    def _init_env_vars(self):
         """ Read the Lambda Environment variables and store it """
-        env_vars_to_get = sr_config["env_vars_to_get"]
+        # env_vars_to_get = sr_config["env_vars_to_get"]
         env_vars = {}
-        for env_var in env_vars_to_get:
+        for env_var in REQUIRED_ENV_VARS:
             env_vars[env_var] = getenv(env_var, "")
 
         important_env_vars = ["region", "stage"]
