@@ -85,10 +85,7 @@ class Plugins:
 
     def _init_env_vars(self):
         """ Read the Lambda Environment variables and store it """
-        # env_vars_to_get = sr_config["env_vars_to_get"]
-        env_vars = {}
-        for env_var in REQUIRED_ENV_VARS:
-            env_vars[env_var] = getenv(env_var, "")
+        env_vars = {env_var: getenv(env_var) for env_var in REQUIRED_ENV_VARS}
 
         important_env_vars = ["region", "stage"]
         for env_var, val in env_vars.items():
