@@ -218,7 +218,7 @@ This diagram details the AWS components Shadow Reader uses and how they interact
   <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/shadow-reader-architecture.png?raw=true" alt="shadow-reader-design" width="90%" height="90%"/>
 </p>
 
-## Contributing
+## Contributing and Deveploment
 
 Please see the [contributing guide](CONTRIBUTING.md) for more specifics.
 
