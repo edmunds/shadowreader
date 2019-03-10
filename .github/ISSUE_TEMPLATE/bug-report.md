@@ -3,6 +3,7 @@ name: "🐛 Bug report"
 about: Create a report to help us improve
 
 ---
+**These fields are not required and are just suggestions.**
 
 **Describe the bug**
 A clear and concise description of what the bug is.
