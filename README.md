@@ -13,7 +13,9 @@ ShadowReader has the ability to replay production traffic to a destination of yo
 <p align="center">
   <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/example1.png?raw=true" alt="shadow-reader-example1" width="75%" height="75%"/>
 </p>
-
+<p align="center">
+  <img src="https://github.com/edmunds/shadowreader/blob/master/docs/imgs/load-test-animation.gif?raw=true" alt="shadow-reader-animation" width="75%" height="75%"/>
+</p>
 In the chart above, the blue line is the request rate of ShadowReader while in orange is the load on the production website.
 
 ShadowReader mimics real user traffic by replaying URLs from production at the same rate as the live website. Being serverless, it is more efficient cost and performance wise than traditional distributed load tests and in practice has scaled beyond 50,000 requests / minute.
