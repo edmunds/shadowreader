@@ -5,7 +5,7 @@
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
 <p align="center">
-  <img src="https://ysawa0.github.io/sr-assets/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
+  <img src="https://raw.githubusercontent.com/edmunds/shadowreader/master/docs/imgs/logo.png" alt="ShadowReader Logo" width="50%" height="50%"/>
 </p>
 
 ShadowReader has the ability to replay production traffic to a destination of your choice by collecting traffic patterns from access logs. It is built on AWS Lambda, S3 and Elastic Load Balancers.
