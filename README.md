@@ -24,6 +24,7 @@ Support for replaying logs from these load balancers:
 
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
 - [Classic Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/introduction.html)
+- Any logs stored locally, just provide a RegEx for the log format
 - (Support for other types of load balancers planned)
 
 ### Read about it
@@ -37,6 +38,7 @@ To get started, see:
 - [Batteries included demo for trying out live replay](#live-replay)
 - [More in-depth guide for setting up past replay](docs/setup.md)
 - [How to send load test metrics to CloudWatch](docs/cloudwatch-guide.md)
+- [Parse locally stored logs](docs/local_parser.md)
 
 ## Trying Live Replay <a name="live-replay"/>
 
