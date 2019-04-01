@@ -36,6 +36,15 @@ First, save the below to a `logs.txt` file.
 ```
 
 Now run the local parser, `parser.py` via the terminal.
+The RegEx capturing group for the timestamp field *must* be named `timestamp` in the RegEx provided.
+```
+:param file: Name of log file to parse
+:param app: Name of the application for the logs
+:param bucket: S3 bucket to store the parsed logs to
+:param timeformat: The format of the timestamp in the logs
+                    Accepts the following tokens: https://pendulum.eustace.io/docs/#tokens
+:param regex: Regex to use to parse the logs
+```    
 ## Run the local parser
 ```
 [me:...s/shadowreader/shadowreader]$ python3 parser.py --file logs.txt --app app1 --bucket $your_s3_bucket \
