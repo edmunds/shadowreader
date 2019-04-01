@@ -53,6 +53,8 @@ First, save the below to a `logs.txt` file.
 
 Now run the local parser, `parser.py` via the terminal.
 The RegEx capturing group for the timestamp field *must* be named `timestamp` in the RegEx provided.
+There must be a RegEx capturing group named `url` which captures the url of the logged event.
+The RegEx must be in the [Python format](https://docs.python.org/3/howto/regex.html).
 ```
 :param file: Name of log file to parse.
 :param app: Name of the application for the logs.
@@ -60,16 +62,17 @@ The RegEx capturing group for the timestamp field *must* be named `timestamp` in
 :param timeformat: The format of the timestamp in the logs. Ex: 'DD/MMM/YYYY:HH:mm:ss ZZ'
                    Accepts the following tokens: https://pendulum.eustace.io/docs/#tokens
 :param regex: Regex to use to parse the logs.
-              Ex: '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<request>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
+              Ex: '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<req_method>.+) (?P<url>.+) (?P<httpver>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
 ```
 ## Run the local parser
 ```
+# inside the shadowreader directory
 pip install -r requirements-local-parser.txt
 ```
 ```
-[ysawa:...s/shadowreader/shadowreader]$ python3 parser.py --file logs.txt --app app1 --bucket $your_s3_bucket \
+python3 parser.py --file logs.txt --app app1 --bucket my-bucket \
 --timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
---regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<request>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
+--regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<req_method>.+) (?P<url>.+) (?P<httpver>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
 ```
 
 You should see an output like below.
