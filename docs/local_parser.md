@@ -47,6 +47,9 @@ The RegEx capturing group for the timestamp field *must* be named `timestamp` in
 ```    
 ## Run the local parser
 ```
+pip install -r requirements-local-parser.txt
+```
+```
 [me:...s/shadowreader/shadowreader]$ python3 parser.py --file logs.txt --app app1 --bucket $your_s3_bucket \
 --timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
 --regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<request>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
