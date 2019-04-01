@@ -67,6 +67,7 @@ package:
    - .git/**
    - node_modules/**
    - tests/**
+   - parser.py
 
 functions:
   orchestrator-past:
