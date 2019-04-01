@@ -1,0 +1,66 @@
+# Local Parser
+
+ShadowReader can parse logs stored locally and push it to S3, so that it can be replayed by the load testing Lambdas.
+
+
+The only requirements are that:
+- Logs must be in a consistent format.
+- You must supply a RegEx to instruct the script of the log format.
+- You must supply the time format for the timestamps in the logs.
+
+Below is an example of how to parse logs stored in the [default Nginx log format](https://docs.nginx.com/nginx/admin-guide/monitoring/logging/)
+```
+log_format combined '$remote_addr - $remote_user [$time_local] '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent"';
+```
+
+## How to
+First, Save the below to a logs.txt file.
+```
+10.168.166.132 - - [15/Mar/2019:04:14:24 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:14:31 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:14:39 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:14:46 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:14:54 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:15:01 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:15:09 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:15:16 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:15:24 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:15:31 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:15:39 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:15:46 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:15:54 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.168.78 - - [15/Mar/2019:04:16:01 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+10.168.166.132 - - [15/Mar/2019:04:16:09 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
+```
+
+Now run the local parser, parser.py via the terminal.
+## Run the local parser
+```
+[me:...s/shadowreader/shadowreader]$ python3 parser.py --file logs.txt --app app1 --bucket $your_s3_bucket \
+--timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
+--regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<request>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
+```
+
+You should see an output like below.
+```
+5 minutes of traffic data was uploaded to S3.
+Average requests/min: 6
+Max requests/min: 8
+Min requests/min: 2
+Timezone found in logs: +00:00
+To load test with these results, use the below parameters for the orchestrator in serverless.yml
+==========================================
+test_params: {
+  "base_url": "http://$your_base_url",
+  "rate": 100,
+  "replay_start_time": "2019-03-15T04:12",
+  "replay_end_time": "2019-03-15T04:16",
+  "identifier": "oss"
+}
+apps_to_test: ["app1"]
+==========================================
+```
+
+Paste the test_params and apps_to_test into serverless.yml and follow the other guides to start the load test.
