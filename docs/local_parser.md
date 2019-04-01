@@ -16,7 +16,7 @@ log_format combined '$remote_addr - $remote_user [$time_local] '
 ```
 
 ## How to
-First, Save the below to a logs.txt file.
+First, save the below to a `logs.txt` file.
 ```
 10.168.166.132 - - [15/Mar/2019:04:14:24 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
 10.168.168.78 - - [15/Mar/2019:04:14:31 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
@@ -35,7 +35,7 @@ First, Save the below to a logs.txt file.
 10.168.166.132 - - [15/Mar/2019:04:16:09 +0000] "GET / HTTP/1.1" 403 23 "-" "ELB-HealthChecker/2.0" "-"
 ```
 
-Now run the local parser, parser.py via the terminal.
+Now run the local parser, `parser.py` via the terminal.
 ## Run the local parser
 ```
 [me:...s/shadowreader/shadowreader]$ python3 parser.py --file logs.txt --app app1 --bucket $your_s3_bucket \
