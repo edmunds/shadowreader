@@ -19,12 +19,13 @@ timestamp_field = "timestamp"
 @click.option("--timeformat", help="name of app")
 @click.option("--regex", help="name of app")
 def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
+    # def main(file: str, app: str, bucket: str, regex: str, timeformat: str = ""):
     """
     Accepts input from CLI to parse locally stored logs
     Example:
     python3 parser.py --file logs --app app1 --bucket serverless-sr-deploys \
     --timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
-    --regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<request>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
+    --regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<req_method>.+) (?P<uri>.+) (?P<httpver>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
 
     :param file: Name of log file to parse
     :param app: Name of the application for the logs
@@ -33,6 +34,13 @@ def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
                        Accepts the following tokens: https://pendulum.eustace.io/docs/#tokens
     :param regex: Regex to use to parse the logs
     """  # noqa: W605
+
+    def parse_time(t):
+        if timeformat:
+            return pendulum.from_format(t, timeformat)
+        else:
+            return pendulum.parse(t)
+
     with open(file) as f:
         lines = f.readlines()
 
@@ -45,11 +53,11 @@ def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
     tzinfo = pendulum.tz.local_timezone()
     if lines:
         first = lines[0]
-        inst = pendulum.from_format(first[timestamp_field], timeformat)
+        inst = parse_time(first[timestamp_field])
         tzinfo = inst.tzinfo
 
     for l in lines:
-        l[timestamp_field] = pendulum.from_format(l[timestamp_field], timeformat)
+        l[timestamp_field] = parse_time(l[timestamp_field])
 
     payload = {app: defaultdict(list)}
     payload = _batch_lines_by_timestamp(lines, payload, app)
@@ -99,8 +107,8 @@ def print_stats(res: list, tzinfo, app: str):
         f"To load test with these results, use the below parameters for the orchestrator in serverless.yml"
     )
     click.echo(f"==========================================")
-    click.echo(f"test_params: {dump}")
-    click.echo(f'apps_to_test: ["{app}"]')
+    click.echo(f"test_params: '{dump}'")
+    click.echo(f"apps_to_test: '[\"{app}\"]'")
     click.echo(f"==========================================")
 
     """
