@@ -228,8 +228,9 @@ Please see the [contributing guide](CONTRIBUTING.md) for more specifics.
 
 ## Contact/Support
 
-Contact [Yuki Sawa](https://github.com/ysawa0) - 
-I greatly appreciate any feedback / suggestions! Email me at: ysawa@edmunds.com
+While ShadowReader has been productionalized at Edmunds, the open source version is still under active development and we greatly appreciate any feedback, suggestions, or comments!
+
+Email me: ysawa@edmunds.com or contact me on Twitter: [@yukisww](https://twitter.com/yukisww)
 
 or use the [Issues](https://github.com/edmunds/shadowreader/issues) page
 
