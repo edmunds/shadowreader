@@ -74,7 +74,7 @@ python3 parser.py --file logs.txt --app app1 --bucket my-bucket \
 --timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
 --regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<req_method>.+) (?P<uri>.+) (?P<httpver>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
 ```
-**NOTE:** The S3 bucket set in `--bucket` must be the same as the `access_logs_bucket` in `shadowreader.yml`
+**NOTE:** The S3 bucket set in `--bucket` must be the same as the name of the deployed `parsed_data_bucket` in `serverless.yml`
 
 You should see an output like below.
 ```
