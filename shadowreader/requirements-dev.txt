@@ -1,5 +1,5 @@
-black
-flake8
-pytest
-pytest-cov
-pre-commit
+black>=18.9b0
+flake8>=3.6.0
+pytest>=4.0.2
+pytest-cov>=2.6.0
+pre-commit>=1.13.0
