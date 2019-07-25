@@ -1,6 +1,4 @@
 import json
-from functools import reduce
-from operator import add
 from collections import defaultdict
 
 import re
@@ -13,12 +11,12 @@ timestamp_field = "timestamp"
 
 
 @click.command()
-@click.option("--file", help="file to parse")
+@click.argument("files", nargs=-1)
 @click.option("--app", help="name of app")
 @click.option("--bucket", help="name of app")
 @click.option("--timeformat", help="name of app")
 @click.option("--regex", help="name of app")
-def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
+def main(files: str, app: str, bucket: str, timeformat: str, regex: str):
     # def main(file: str, app: str, bucket: str, regex: str, timeformat: str = ""):
     """
     Accepts input from CLI to parse locally stored logs
@@ -35,12 +33,13 @@ def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
     :param regex: Regex to use to parse the logs
     """  # noqa: W605
 
-    def parse_time(t):
-        if timeformat:
-            return pendulum.from_format(t, timeformat)
-        else:
-            return pendulum.parse(t)
+    for f in files:
+        click.echo(f"Processing file: {f}")
+        parse_file(f, app, bucket, timeformat, regex)
+        click.echo()
 
+
+def parse_file(file: str, app: str, bucket: str, timeformat: str, regex: str):
     with open(file) as f:
         lines = f.readlines()
 
@@ -49,6 +48,18 @@ def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
     lines = [x.strip() for x in lines if x.strip()]
     lines = [regex.match(x) for x in lines if x]
     lines = [x.groupdict() for x in lines if x]
+
+    def parse_time(t):
+        if timeformat:
+            return pendulum.from_format(t, timeformat)
+        else:
+            return pendulum.parse(t)
+
+    if not lines:
+        click.echo(
+            f"No logs were parsed for {file}. Could the RegEx be wrong or the file empty?"
+        )
+        return
 
     tzinfo = pendulum.tz.local_timezone()
     if lines:
@@ -61,6 +72,8 @@ def main(file: str, app: str, bucket: str, timeformat: str, regex: str):
 
     payload = {app: defaultdict(list)}
     payload = _batch_lines_by_timestamp(lines, payload, app)
+
+    click.echo(f"Processing done. Pushing results to S3...")
 
     parse_results = _put_payload_on_s3(
         payload=payload[app], bucket=bucket, elb_name=app, testing={}
@@ -77,8 +90,7 @@ def print_stats(res: list, tzinfo, app: str):
     :param app: Name of application for the logs
     """
     mins_of_data = len(res)
-
-    total_reqs = reduce(add, [x["num_uris"] for x in res])
+    total_reqs = sum([x["num_uris"] for x in res])
     max_reqs = max([x["num_uris"] for x in res])
     min_reqs = min([x["num_uris"] for x in res])
     avg_reqs = total_reqs // mins_of_data
