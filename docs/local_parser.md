@@ -56,7 +56,7 @@ The RegEx capturing group for the timestamp field *must* be named `timestamp` in
 There must be a RegEx capturing group named `uri` which captures the uri of the logged event.
 The RegEx must be in the [Python format](https://docs.python.org/3/howto/regex.html).
 ```
-:param file: Name of log file to parse.
+:param file: Name of log file to parse. Accepts wildcards.
 :param app: Name of the application for the logs.
 :param bucket: S3 bucket to store the parsed logs to, Ex: "my-bucket123"
 :param timeformat: The format of the timestamp in the logs. Ex: 'DD/MMM/YYYY:HH:mm:ss ZZ'
@@ -70,7 +70,13 @@ The RegEx must be in the [Python format](https://docs.python.org/3/howto/regex.h
 pip install -r requirements-local-parser.txt
 ```
 ```
-python3 parser.py --file logs.txt --app app1 --bucket my-bucket \
+python3 parser.py logs.txt --app app1 --bucket my-bucket \
+--timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
+--regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<req_method>.+) (?P<uri>.+) (?P<httpver>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
+```
+```
+Wildcard example for parsing multiple files
+python3 parser.py /tmp/logs-2019* --app app1 --bucket my-bucket \
 --timeformat 'DD/MMM/YYYY:HH:mm:ss ZZ' \
 --regex '(?P<remote_addr>[\S]+) - (?P<remote_user>[\S]+) \[(?P<timestamp>.+)\] "(?P<req_method>.+) (?P<uri>.+) (?P<httpver>.+)" (?P<status>[\S]+) (?P<body_bytes_sent>[\S]+) "(?P<referer>[\S]+)" "(?P<user_agent>[\S]+)" "(?P<x_forwarded_for>[\S]+)"'
 ```
