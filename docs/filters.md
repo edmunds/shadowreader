@@ -74,7 +74,7 @@ Ex:
 `"status": [400, 500]` ==> Will filter all 4XX and 5XX status code requests.
 
 ### **user_agent**
-Filter basd on User-Agent header. Accepts list of strings.
+Filter based on User-Agent header. Accepts list of strings.
 
 Ex:
 
