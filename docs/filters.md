@@ -15,7 +15,7 @@ filters: '{
 ```
 This will exclude any requests that returned a 3XX, 4XX, or 5XX status code and any requests that contain "Googlebot" in the User-Agent.
 
-To enable filtering, open `serverless.yml` and scroll to the section with the `orchestrator` settings and add a `filter` block.
+To enable filtering, open `serverless.yml` and scroll to the section with the `orchestrator` settings and add a `filters` block.
 ```
 functions:
   orchestrator-past:
