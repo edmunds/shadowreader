@@ -31,7 +31,7 @@ Support for replaying logs from these load balancers:
 ### [How we fixed a Node.js memory leak by using ShadowReader to replay production traffic into QA](http://technology.edmunds.com/2018/08/25/Investigating-a-Memory-Leak-and-Introducing-ShadowReader/)
 
 
-## Getting started
+## Documentation
 
 To get started, see:
 
@@ -39,6 +39,7 @@ To get started, see:
 - [More in-depth guide for setting up past replay](docs/setup.md)
 - [How to send load test metrics to CloudWatch](docs/cloudwatch-guide.md)
 - [Parse locally stored logs](docs/local_parser.md)
+- [Filter requests from replay](docs/filters.md)
 
 ## Trying Live Replay <a name="live-replay"/>
 
