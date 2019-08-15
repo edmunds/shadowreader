@@ -80,6 +80,6 @@ Ex:
 
 `"user_agent": ["Googlebot"]` ==> Filter requests with User-Agent that contain the string "Googlebot"
 
-`"user_agent": ["Googlebot", "BotXYZ"]` ==> Filter request with User-Agent contain the string "Googlebot" or "BotXYZ"
+`"user_agent": ["Googlebot", "BotXYZ"]` ==> Filter request with User-Agent that contain the string "Googlebot" or "BotXYZ"
 
-The strings do not match exactly. ie: A request with User-Agent `BotXYZ 1.5` will be filtered by the above example.
+It does not match exactly. ie: A request with User-Agent `BotXYZ 1.5` will be filtered by the above example.
